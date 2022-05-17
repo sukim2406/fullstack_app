@@ -2,6 +2,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.generics import ListAPIView
+from rest_framework.authentication import TokenAuthentication
 
 from accountapp.models import Account
 from tweetapp.models import Tweet
@@ -65,7 +68,7 @@ def api_delete_tweet_view(request, slug):
         return Response(data=data)
 
 
-@api_view(['POST'])
+@api_view(['POST',])
 @permission_classes((IsAuthenticated,))
 def api_create_tweet_view(request):
     account = request.user
@@ -78,3 +81,10 @@ def api_create_tweet_view(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ApiTweetListView(ListAPIView):
+    queryset = Tweet.objects.all()
+    serializer_class = TweetSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    pagination_class = PageNumberPagination
