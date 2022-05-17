@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/account/', include('accountapp.api.urls', 'account_api')),
     path('api/tweet/', include('tweetapp.api.urls', 'tweet_api')),
+    path('api/profile/', include('profileapp.api.urls', 'profile_api')),
 ]
 
 if settings.DEBUG:

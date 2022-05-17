@@ -2,7 +2,27 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 
 main() {
-  createTweetTest();
+  detailTweetTest();
+}
+
+detailProfileTest() async {
+  var response = await http.get(
+      Uri.parse("http://localhost:8000/api/profile/testuser2/detail/"),
+      headers: <String, String>{
+        HttpHeaders.authorizationHeader:
+            'Token 72c71e1407e78c350aa731aba78fb8d42e34105c',
+      });
+  print(response.body);
+}
+
+detailTweetTest() async {
+  var response = await http.get(
+      Uri.parse("http://localhost:8000/api/tweet/testuser2-test/detail/"),
+      headers: <String, String>{
+        HttpHeaders.authorizationHeader:
+            'Token 72c71e1407e78c350aa731aba78fb8d42e34105c',
+      });
+  print(response.body);
 }
 
 registerTest() async {
