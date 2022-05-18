@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import './single_tweet.dart';
 
 class TweetListPage extends StatefulWidget {
   final String token;
@@ -64,11 +65,24 @@ class _TweetListPageState extends State<TweetListPage> {
                   return ListView.builder(
                     itemCount: data['results'].length,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(data['results']
-                            [data['results'].length - 1 - index]['title']),
-                        subtitle: Text(data['results']
-                            [data['results'].length - 1 - index]['body']),
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SingleTweetPage(
+                                tweet: data['results']
+                                    [data['results'].length - 1 - index],
+                              ),
+                            ),
+                          );
+                        },
+                        child: ListTile(
+                          title: Text(data['results']
+                              [data['results'].length - 1 - index]['title']),
+                          subtitle: Text(data['results']
+                              [data['results'].length - 1 - index]['body']),
+                        ),
                       );
                     },
                   );

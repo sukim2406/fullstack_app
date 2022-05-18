@@ -20,5 +20,5 @@ def api_detail_profile_view(request, slug):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == 'GET':
-        serializer = ProfileSerializer(Profile)
+        serializer = ProfileSerializer(profile)
         return Response(serializer.data)

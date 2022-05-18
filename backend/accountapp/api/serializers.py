@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from accountapp.models import Account
+from profileapp.models import Profile
 
 class RegistrationSerializer(serializers.ModelSerializer):
 
@@ -25,5 +26,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
         
         account.set_password(password)
         account.save()
+
+        profile = Profile(
+            user = account,
+            nickname = self.validated_data['username']
+        )
+
+        profile.save()
 
         return account

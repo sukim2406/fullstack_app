@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
-
+import 'package:get/get.dart';
 import './pages/home.dart';
+import './controllers/pref_controllers.dart';
+import './controllers/global_controllers.dart';
 
 void main() {
+  Get.put(
+    PrefControllers(),
+  );
+  Get.put(
+    GlobalControllers(),
+  );
   runApp(const MyApp());
 }
 

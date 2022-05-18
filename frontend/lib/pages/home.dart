@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -7,6 +7,8 @@ import './login.dart';
 import './signup.dart';
 import './post_tweet.dart';
 import './tweet_list.dart';
+import './profile.dart';
+import '../controllers/pref_controllers.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,21 +20,31 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late SharedPreferences shared;
   String token = '';
+  String curUser = '';
   @override
   void initState() {
     super.initState();
-    getSharedPreferences();
-    getToken();
-  }
-
-  Future getSharedPreferences() async {
-    shared = await SharedPreferences.getInstance();
-  }
-
-  Future getToken() async {
-    final pref = await SharedPreferences.getInstance();
-    token = pref.getString('token') ?? '';
-    setState(() {});
+    PrefControllers.instance.getSharedPreferences().then(
+      (value) {
+        setState(() {
+          shared = value;
+        });
+        PrefControllers.instance.getToken(shared).then(
+          (value) {
+            setState(() {
+              token = value;
+            });
+          },
+        );
+        PrefControllers.instance.getCurUser(shared).then(
+          (value) {
+            setState(() {
+              curUser = value;
+            });
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -77,6 +89,32 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   TextButton(
                     onPressed: () async {
+                      var response = await http.get(
+                        Uri.parse(
+                          "http://localhost:8000/api/profile/${curUser}/detail/",
+                        ),
+                        headers: {
+                          HttpHeaders.authorizationHeader: 'Token ' + token
+                        },
+                      );
+                      var jsonResponse = null;
+                      if (response.statusCode == 200) {
+                        jsonResponse = json.decode(response.body);
+                        print(jsonResponse);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfilePage(
+                              profile: jsonResponse,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text('PROFILE'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
                       var response = await http.post(
                         Uri.parse("http://localhost:8000/api/account/logout/"),
                         headers: {
@@ -85,8 +123,12 @@ class _HomePageState extends State<HomePage> {
                       );
                       if (response.statusCode == 200) {
                         shared.remove('token');
-                        getToken();
+                        shared.remove('curUser');
                       }
+                      setState(() {
+                        curUser = '';
+                        token = '';
+                      });
                     },
                     child: const Text(
                       'LOG OUT',
@@ -115,13 +157,6 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       );
-                      // var response = await http.get(
-                      //   Uri.parse("http://localhost:8000/api/tweet/list/"),
-                      //   headers: {
-                      //     HttpHeaders.authorizationHeader: 'Token ' + token,
-                      //   },
-                      // );
-                      // print(response.body);
                     },
                     child: const Text(
                       'GET ALL TWEETS',
