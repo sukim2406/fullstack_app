@@ -39,9 +39,7 @@ class LogoWidget extends StatelessWidget {
           ),
           TextSpan(
             text: 'TWEETER',
-            style: GoogleFonts.dosis(
-              color: Colors.blue,
-            ),
+            style: GoogleFonts.dosis(color: Colors.lightBlue[300]),
           ),
         ],
       ),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class GlobalControllers extends GetxController {
   static GlobalControllers instance = Get.find();
 
+  //  url related
   String baseUrl = 'http://localhost:8000/';
 
   getLoginUrl() {
@@ -18,6 +20,13 @@ class GlobalControllers extends GetxController {
     return registerUrl;
   }
 
+  getLogoutUrl() {
+    String loggoutUrl = baseUrl + 'api/account/logout/';
+
+    return loggoutUrl;
+  }
+
+  // get / set size
   mediaHeight(context, multiple) {
     var height = MediaQuery.of(context).size.height * multiple;
     return height;
@@ -28,6 +37,7 @@ class GlobalControllers extends GetxController {
     return width;
   }
 
+  // snackbar
   printErrorBar(context, text) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -36,4 +46,11 @@ class GlobalControllers extends GetxController {
       ),
     );
   }
+
+  // bottom navigation bar related
+  TextStyle bottomNavBarTextStyles = GoogleFonts.zenLoop(
+    fontSize: 40,
+    fontWeight: FontWeight.bold,
+    letterSpacing: 2,
+  );
 }
