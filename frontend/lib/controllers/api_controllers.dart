@@ -108,4 +108,27 @@ class ApiControllers extends GetxController {
       return null;
     }
   }
+
+  getProfile() async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+    String curUser = await PrefControllers.instance.getCurUser(pref);
+
+    var response = await http.get(
+      Uri.parse(
+        GlobalControllers.instance.getProfileUrl(curUser),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
+    var jsonResponse = null;
+    if (response.statusCode == 200) {
+      jsonResponse = json.decode(response.body);
+      return jsonResponse;
+    } else {
+      return null;
+    }
+  }
 }

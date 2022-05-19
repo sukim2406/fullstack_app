@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../controllers/global_controllers.dart';
 
 import '../pages/account.dart';
+import '../pages/tweet_list.dart';
 
 import '../widgets/bottom_navbar.dart';
 

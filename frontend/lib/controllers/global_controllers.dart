@@ -6,24 +6,30 @@ class GlobalControllers extends GetxController {
   static GlobalControllers instance = Get.find();
 
   //  url related
-  String baseUrl = 'http://localhost:8000/';
+  String baseUrl = 'http://localhost:8000';
 
   getLoginUrl() {
-    String loginUrl = baseUrl + 'api/account/login/';
+    String loginUrl = baseUrl + '/api/account/login/';
 
     return loginUrl;
   }
 
   getRegisterUrl() {
-    String registerUrl = baseUrl + 'api/account/register/';
+    String registerUrl = baseUrl + '/api/account/register/';
 
     return registerUrl;
   }
 
   getLogoutUrl() {
-    String loggoutUrl = baseUrl + 'api/account/logout/';
+    String loggoutUrl = baseUrl + '/api/account/logout/';
 
     return loggoutUrl;
+  }
+
+  getProfileUrl(curUser) {
+    String profileUrl = baseUrl + '/api/profile/${curUser}/detail';
+
+    return profileUrl;
   }
 
   // get / set size
