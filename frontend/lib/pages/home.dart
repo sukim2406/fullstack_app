@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import './login.dart';
-import './signup.dart';
+
+import '../pages/login.dart';
+
 import './post_tweet.dart';
 import './tweet_list.dart';
 import './profile.dart';
@@ -54,36 +56,7 @@ class _HomePageState extends State<HomePage> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: (token == '')
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'LOG IN',
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SignupPage(),
-                          ));
-                    },
-                    child: const Text(
-                      'SIGN UP',
-                    ),
-                  )
-                ],
-              )
+            ? const LoginPage()
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

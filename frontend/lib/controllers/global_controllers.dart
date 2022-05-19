@@ -12,6 +12,12 @@ class GlobalControllers extends GetxController {
     return loginUrl;
   }
 
+  getRegisterUrl() {
+    String registerUrl = baseUrl + 'api/account/register/';
+
+    return registerUrl;
+  }
+
   mediaHeight(context, multiple) {
     var height = MediaQuery.of(context).size.height * multiple;
     return height;

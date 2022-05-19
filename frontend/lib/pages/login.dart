@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/api_controllers.dart';
 import '../controllers/global_controllers.dart';
@@ -40,7 +41,14 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(
                 height: GlobalControllers.instance.mediaHeight(
                   context,
-                  .1,
+                  .06,
+                ),
+              ),
+              Text(
+                'LOG IN',
+                style: GoogleFonts.dosis(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               // Textfields
@@ -78,10 +86,11 @@ class _LoginPageState extends State<LoginPage> {
                       (result) {
                         if (result == null) {
                           Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      const HomePage()),
-                              (Route<dynamic> route) => false);
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    const HomePage()),
+                            (Route<dynamic> route) => false,
+                          );
                         } else {
                           GlobalControllers.instance
                               .printErrorBar(context, result);

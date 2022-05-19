@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import './home.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../controllers/global_controllers.dart';
+import '../controllers/api_controllers.dart';
+
+import '../pages/home.dart';
+import '../pages/login.dart';
+
+import '../widgets/text_input.dart';
+import '../widgets/rounded_btn.dart';
+import '../widgets/logo.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -20,108 +27,112 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              height: MediaQuery.of(context).size.height * .1,
-              width: MediaQuery.of(context).size.width * .7,
-              color: Colors.amber,
-              child: TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  hintText: 'EMAIL',
-                ),
+            const LogoWidget(),
+            SizedBox(
+              height: GlobalControllers.instance.mediaHeight(
+                context,
+                .06,
               ),
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * .05,
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height * .1,
-              width: MediaQuery.of(context).size.width * .7,
-              color: Colors.amber,
-              child: TextField(
-                controller: userController,
-                decoration: const InputDecoration(
-                  hintText: 'USER NAME',
-                ),
+            Text(
+              'REGISTER',
+              style: GoogleFonts.dosis(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * .05,
+            TextInputWidget(
+              height: GlobalControllers.instance.mediaHeight(context, .07),
+              width: GlobalControllers.instance.mediaWidth(context, .8),
+              controller: emailController,
+              label: 'EMAIL',
+              obsecure: false,
             ),
-            Container(
-              height: MediaQuery.of(context).size.height * .1,
-              width: MediaQuery.of(context).size.width * .7,
-              color: Colors.amber,
-              child: TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  hintText: 'PASSWORD',
-                ),
-              ),
+            TextInputWidget(
+              height: GlobalControllers.instance.mediaHeight(context, .07),
+              width: GlobalControllers.instance.mediaWidth(context, .8),
+              controller: userController,
+              label: 'USERNAME',
+              obsecure: false,
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * .05,
+            TextInputWidget(
+              height: GlobalControllers.instance.mediaHeight(context, .07),
+              width: GlobalControllers.instance.mediaWidth(context, .8),
+              controller: passwordController,
+              label: 'PASSWORD',
+              obsecure: true,
             ),
-            Container(
-              height: MediaQuery.of(context).size.height * .1,
-              width: MediaQuery.of(context).size.width * .7,
-              color: Colors.amber,
-              child: TextField(
-                controller: password2Controller,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  hintText: 'PASSWORD CONFIRM',
-                ),
-              ),
+            TextInputWidget(
+              height: GlobalControllers.instance.mediaHeight(context, .07),
+              width: GlobalControllers.instance.mediaWidth(context, .8),
+              controller: password2Controller,
+              label: 'PASSWORD CONFRIM',
+              obsecure: true,
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height * .05,
+              height: GlobalControllers.instance.mediaHeight(context, .05),
             ),
-            Container(
-              height: MediaQuery.of(context).size.height * .1,
-              width: MediaQuery.of(context).size.width * .7,
-              color: Colors.green,
-              child: ElevatedButton(
-                onPressed: () async {
-                  SharedPreferences shared =
-                      await SharedPreferences.getInstance();
-                  Map data = {
-                    'email': emailController.text,
-                    'username': userController.text,
-                    'password': passwordController.text,
-                    'password2': password2Controller.text,
-                  };
-                  var jsonResponse = null;
-                  var response = await http.post(
-                    Uri.parse("http://localhost:8000/api/account/register/"),
-                    body: data,
-                  );
-                  if (response.statusCode == 200) {
-                    jsonResponse = json.decode(response.body);
-                    if (jsonResponse != null) {
-                      shared.setString("token", jsonResponse['token']);
-                      print(jsonResponse.toString());
-                      print(jsonResponse['token']);
-                      Navigator.of(context).pushAndRemoveUntil(
+            RoundedBtnWidget(
+              height: null,
+              width: GlobalControllers.instance.mediaWidth(context, .5),
+              func: () {
+                if (emailController.text.isEmpty ||
+                    userController.text.isEmpty ||
+                    passwordController.text.isEmpty ||
+                    password2Controller.text.isEmpty) {
+                  GlobalControllers.instance
+                      .printErrorBar(context, 'Empty input field detected.');
+                } else if (passwordController.text !=
+                    password2Controller.text) {
+                  GlobalControllers.instance
+                      .printErrorBar(context, 'Password does not match');
+                } else {
+                  ApiControllers.instance
+                      .register(
+                    emailController.text,
+                    userController.text,
+                    passwordController.text,
+                    password2Controller.text,
+                  )
+                      .then(
+                    (result) {
+                      if (result == null) {
+                        Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
-                              builder: (BuildContext context) => HomePage()),
-                          (Route<dynamic> route) => false);
-                    }
-                  } else {
-                    print(response.body);
-                    print(data);
-                  }
-                },
-                child: Text('LOGIN'),
-              ),
+                              builder: (BuildContext context) =>
+                                  const HomePage()),
+                          (Route<dynamic> route) => false,
+                        );
+                      } else {
+                        GlobalControllers.instance
+                            .printErrorBar(context, result);
+                      }
+                    },
+                  );
+                }
+              },
+              label: 'REGISTER',
+              color: Colors.blue,
+            ),
+            RoundedBtnWidget(
+              height: null,
+              width: null,
+              func: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                );
+              },
+              label: 'LOG IN',
+              color: Colors.grey,
             ),
           ],
         ),
