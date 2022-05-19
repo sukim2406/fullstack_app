@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import './pages/home.dart';
 import './controllers/pref_controllers.dart';
 import './controllers/global_controllers.dart';
+import './controllers/api_controllers.dart';
 
 void main() {
   Get.put(
@@ -10,6 +11,9 @@ void main() {
   );
   Get.put(
     GlobalControllers(),
+  );
+  Get.put(
+    ApiControllers(),
   );
   runApp(const MyApp());
 }
@@ -22,7 +26,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        inputDecorationTheme: const InputDecorationTheme(
+          labelStyle: TextStyle(
+            color: Colors.black,
+          ),
+        ),
         primarySwatch: Colors.blue,
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: Colors.black,
+          selectionColor: Colors.black,
+          selectionHandleColor: Colors.black,
+        ),
       ),
       home: const HomePage(),
     );

@@ -1,11 +1,14 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:frontend/controllers/global_controllers.dart';
-import 'package:frontend/pages/home.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+
+import '../controllers/api_controllers.dart';
+import '../controllers/global_controllers.dart';
+
+import '../pages/home.dart';
+import '../pages/signup.dart';
+
 import '../widgets/logo.dart';
 import '../widgets/text_input.dart';
+import '../widgets/rounded_btn.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -55,43 +58,55 @@ class _LoginPageState extends State<LoginPage> {
                 label: 'PASSWORD',
                 obsecure: true,
               ),
-              Container(
-                height: MediaQuery.of(context).size.height * .1,
-                width: MediaQuery.of(context).size.width * .7,
-                color: Colors.green,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    SharedPreferences shared =
-                        await SharedPreferences.getInstance();
-                    Map data = {
-                      'username': emailController.text,
-                      'password': passwordController.text,
-                    };
-                    var jsonResponse = null;
-                    var response = await http.post(
-                      Uri.parse("http://localhost:8000/api/account/login/"),
-                      body: data,
-                    );
-                    if (response.statusCode == 200) {
-                      jsonResponse = json.decode(response.body);
-                      if (jsonResponse != null) {
-                        shared.setString("token", jsonResponse['token']);
-                        shared.setString("curUser", jsonResponse['user']);
-                        print(jsonResponse.toString());
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (BuildContext context) => HomePage()),
-                            (Route<dynamic> route) => false);
-                      }
-                    } else {
-                      print(response.body);
-                      print(data);
-                    }
-                  },
-                  child: Text('LOGIN'),
-                ),
+              SizedBox(
+                height: GlobalControllers.instance.mediaHeight(context, .05),
               ),
-              // padding - bottom
+              RoundedBtnWidget(
+                height: null,
+                width: GlobalControllers.instance.mediaWidth(context, .5),
+                func: () {
+                  if (emailController.text == null ||
+                      emailController.text.isEmpty ||
+                      passwordController.text == null ||
+                      passwordController.text.isEmpty) {
+                    GlobalControllers.instance
+                        .printErrorBar(context, 'Empty input field detected.');
+                  } else {
+                    ApiControllers.instance
+                        .login(emailController.text, passwordController.text)
+                        .then(
+                      (result) {
+                        if (result == null) {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      const HomePage()),
+                              (Route<dynamic> route) => false);
+                        } else {
+                          GlobalControllers.instance
+                              .printErrorBar(context, result);
+                        }
+                      },
+                    );
+                  }
+                },
+                label: 'LOG IN',
+                color: Colors.blue,
+              ),
+              RoundedBtnWidget(
+                height: null,
+                width: null,
+                func: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SignupPage(),
+                    ),
+                  );
+                },
+                label: 'REGISTER',
+                color: Colors.grey,
+              ),
               Expanded(
                 child: Container(),
               ),
