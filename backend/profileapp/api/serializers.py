@@ -12,3 +12,9 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_username_from_user(self, profile):
         username = profile.user.username
         return username
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        fields = ['image', 'nickname', 'message']

@@ -6,6 +6,8 @@ import '../controllers/global_controllers.dart';
 import '../controllers/api_controllers.dart';
 import '../controllers/pref_controllers.dart';
 
+import '../pages/account_update.dart';
+
 import '../widgets/rounded_btn.dart';
 
 class AccountPage extends StatefulWidget {
@@ -113,7 +115,25 @@ class _AccountPageState extends State<AccountPage> {
                   child: RoundedBtnWidget(
                     height: null,
                     width: null,
-                    func: () {},
+                    func: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AccountUpdatePage(
+                            reload: () {
+                              ApiControllers.instance
+                                  .getProfile()
+                                  .then((value) {
+                                setState(() {
+                                  profileData = value;
+                                });
+                              });
+                            },
+                            profileData: profileData,
+                          ),
+                        ),
+                      );
+                    },
                     label: 'UPDATE',
                     color: Colors.lightBlue,
                   ),
@@ -185,15 +205,6 @@ class _AccountPageState extends State<AccountPage> {
             ),
           ],
         ),
-        // Center(
-        //   child: RoundedBtnWidget(
-        //     height: null,
-        //     width: null,
-        //     func: logout,
-        //     label: 'LOG OUT',
-        //     color: Colors.red,
-        //   ),
-        // ),
       ),
     );
   }

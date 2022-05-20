@@ -27,9 +27,15 @@ class GlobalControllers extends GetxController {
   }
 
   getProfileUrl(curUser) {
-    String profileUrl = baseUrl + '/api/profile/${curUser}/detail';
+    String profileUrl = baseUrl + '/api/profile/${curUser}/detail/';
 
     return profileUrl;
+  }
+
+  updateProfileUrl(curUser) {
+    String updateProfileUrl = baseUrl + '/api/profile/${curUser}/update/';
+
+    return updateProfileUrl;
   }
 
   // get / set size

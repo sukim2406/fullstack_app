@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:async/async.dart';
+import 'package:http_parser/http_parser.dart';
 
 import '../controllers/global_controllers.dart';
 import '../controllers/pref_controllers.dart';
@@ -129,6 +131,48 @@ class ApiControllers extends GetxController {
       return jsonResponse;
     } else {
       return null;
+    }
+  }
+
+  updateProfile(nickname, message, image) async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+    String curUser = await PrefControllers.instance.getCurUser(pref);
+
+    var request = await http.MultipartRequest(
+      'PUT',
+      Uri.parse(
+        GlobalControllers.instance.updateProfileUrl(curUser),
+      ),
+    );
+
+    request.headers[HttpHeaders.authorizationHeader] = 'Token ' + token;
+
+    if (nickname != null) {
+      request.fields['nickname'] = nickname;
+    }
+    if (message != null) {
+      request.fields['message'] = message;
+    }
+
+    if (image != null) {
+      File file = File(image.path);
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'image',
+          file.readAsBytesSync(),
+          filename: image.path.split('/').last,
+        ),
+      );
+    }
+
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

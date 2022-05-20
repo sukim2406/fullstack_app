@@ -37,7 +37,7 @@ def api_update_tweet_view(request, slug):
         return Response({'response': "You don't have permission to edit this tweet."})
 
     if request.method == 'PUT':
-        serializer = TweetSerializer(Tweet, data=request.data)
+        serializer = TweetSerializer(tweet, data=request.data)
         data = {}
         if serializer.is_valid():
             serializer.save()
