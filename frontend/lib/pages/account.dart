@@ -7,6 +7,7 @@ import '../controllers/api_controllers.dart';
 import '../controllers/pref_controllers.dart';
 
 import '../pages/account_update.dart';
+import '../pages/password_update.dart';
 
 import '../widgets/rounded_btn.dart';
 
@@ -21,11 +22,14 @@ class AccountPage extends StatefulWidget {
   State<AccountPage> createState() => _AccountPageState();
 }
 
-class _AccountPageState extends State<AccountPage> {
+class _AccountPageState extends State<AccountPage>
+    with SingleTickerProviderStateMixin {
   late SharedPreferences pref;
   String token = '';
   String curUser = '';
   Map profileData = {};
+  Map accountData = {};
+  late TabController _tabController;
 
   @override
   void initState() {
@@ -53,6 +57,16 @@ class _AccountPageState extends State<AccountPage> {
         profileData = value;
       });
     });
+    ApiControllers.instance.getAccount().then(
+      (value) {
+        setState(
+          () {
+            accountData = value;
+          },
+        );
+      },
+    );
+    _tabController = new TabController(length: 3, vsync: this);
   }
 
   logout() {
@@ -66,6 +80,7 @@ class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     print(profileData.toString());
+    print(accountData.toString());
     return Scaffold(
       body: Container(
         height: GlobalControllers.instance.mediaHeight(context, .94),
@@ -115,25 +130,62 @@ class _AccountPageState extends State<AccountPage> {
                   child: RoundedBtnWidget(
                     height: null,
                     width: null,
-                    func: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AccountUpdatePage(
-                            reload: () {
-                              ApiControllers.instance
-                                  .getProfile()
-                                  .then((value) {
-                                setState(() {
-                                  profileData = value;
-                                });
-                              });
+                    func: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: const Text('Update Personal Info.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PasswordUpdatePage(
+                                    accountData: accountData,
+                                  ),
+                                ),
+                              );
                             },
-                            profileData: profileData,
+                            child: const Text(
+                              'CHANGE PASSWORD',
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AccountUpdatePage(
+                                    reload: () {
+                                      ApiControllers.instance
+                                          .getProfile()
+                                          .then((value) {
+                                        setState(() {
+                                          profileData = value;
+                                        });
+                                      });
+                                    },
+                                    profileData: profileData,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Text('UPDATE INFO'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     label: 'UPDATE',
                     color: Colors.lightBlue,
                   ),
@@ -199,9 +251,52 @@ class _AccountPageState extends State<AccountPage> {
               height: GlobalControllers.instance.mediaHeight(context, .025),
             ),
             Container(
-              width: GlobalControllers.instance.mediaWidth(context, .85),
-              height: GlobalControllers.instance.mediaHeight(context, .4),
-              color: Colors.amber,
+              width: GlobalControllers.instance.mediaWidth(context, 1),
+              height: GlobalControllers.instance.mediaHeight(context, .43),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TabBar(
+                    unselectedLabelColor: Colors.grey,
+                    labelColor: Colors.lightBlue[300],
+                    controller: _tabController,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    tabs: const [
+                      Tab(
+                        text: 'Tweets',
+                      ),
+                      Tab(
+                        text: 'Likes',
+                      ),
+                      Tab(
+                        text: 'Subscriptions',
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: const [
+                        Center(
+                          child: Text(
+                            'Screen 1',
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            'Screen 2',
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            'Screen 3',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

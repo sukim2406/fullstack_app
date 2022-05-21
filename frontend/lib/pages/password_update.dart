@@ -11,18 +11,30 @@ import '../widgets/text_input.dart';
 import '../widgets/rounded_btn.dart';
 import '../widgets/logo.dart';
 
-class SignupPage extends StatefulWidget {
-  const SignupPage({Key? key}) : super(key: key);
+class PasswordUpdatePage extends StatefulWidget {
+  final Map accountData;
+  const PasswordUpdatePage({
+    Key? key,
+    required this.accountData,
+  }) : super(key: key);
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<PasswordUpdatePage> createState() => _PasswordUpdatePageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _PasswordUpdatePageState extends State<PasswordUpdatePage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController userController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController password2Controller = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    emailController.text = widget.accountData['email'];
+    userController.text = widget.accountData['username'];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,14 +53,14 @@ class _SignupPageState extends State<SignupPage> {
               ),
             ),
             Text(
-              'REGISTER',
+              'PASSWORD UPDATE',
               style: GoogleFonts.dosis(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
               ),
             ),
             TextInputWidget(
-              enabled: true,
+              enabled: false,
               height: GlobalControllers.instance.mediaHeight(context, .07),
               width: GlobalControllers.instance.mediaWidth(context, .8),
               controller: emailController,
@@ -56,7 +68,7 @@ class _SignupPageState extends State<SignupPage> {
               obsecure: false,
             ),
             TextInputWidget(
-              enabled: true,
+              enabled: false,
               height: GlobalControllers.instance.mediaHeight(context, .07),
               width: GlobalControllers.instance.mediaWidth(context, .8),
               controller: userController,
@@ -86,25 +98,22 @@ class _SignupPageState extends State<SignupPage> {
               height: null,
               width: GlobalControllers.instance.mediaWidth(context, .5),
               func: () {
-                if (emailController.text.isEmpty ||
-                    userController.text.isEmpty ||
-                    passwordController.text.isEmpty ||
+                if (passwordController.text.isEmpty ||
                     password2Controller.text.isEmpty) {
                   GlobalControllers.instance
                       .printErrorBar(context, 'Empty input field detected.');
                 } else if (passwordController.text !=
                     password2Controller.text) {
                   GlobalControllers.instance
-                      .printErrorBar(context, 'Password does not match');
+                      .printErrorBar(context, 'Password does not match.');
                 } else {
-                  ApiControllers.instance
-                      .register(
-                    emailController.text,
-                    userController.text,
-                    passwordController.text,
-                    password2Controller.text,
-                  )
-                      .then(
+                  var data = {
+                    'email': emailController.text,
+                    'username': userController.text,
+                    'password': passwordController.text,
+                    'password2': password2Controller.text,
+                  };
+                  ApiControllers.instance.updatePassword(data).then(
                     (result) {
                       if (result == null) {
                         Navigator.of(context).pushAndRemoveUntil(
@@ -121,22 +130,17 @@ class _SignupPageState extends State<SignupPage> {
                   );
                 }
               },
-              label: 'REGISTER',
+              label: 'UPDATE',
               color: Colors.blue,
             ),
             RoundedBtnWidget(
               height: null,
               width: null,
               func: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginPage(),
-                  ),
-                );
+                Navigator.pop(context);
               },
-              label: 'LOG IN',
-              color: Colors.grey,
+              label: 'Cancel',
+              color: Colors.redAccent,
             ),
           ],
         ),

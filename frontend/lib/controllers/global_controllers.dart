@@ -26,6 +26,18 @@ class GlobalControllers extends GetxController {
     return loggoutUrl;
   }
 
+  getAccountUrl() {
+    String accountUrl = baseUrl + '/api/account/detail/';
+
+    return accountUrl;
+  }
+
+  getAccountUpdateUrl() {
+    String accountUpdateUrl = baseUrl + '/api/account/update/';
+
+    return accountUpdateUrl;
+  }
+
   getProfileUrl(curUser) {
     String profileUrl = baseUrl + '/api/profile/${curUser}/detail/';
 

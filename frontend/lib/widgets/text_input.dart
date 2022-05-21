@@ -6,6 +6,7 @@ class TextInputWidget extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final bool obsecure;
+  final bool enabled;
   const TextInputWidget({
     Key? key,
     required this.height,
@@ -13,6 +14,7 @@ class TextInputWidget extends StatelessWidget {
     required this.controller,
     required this.label,
     required this.obsecure,
+    required this.enabled,
   }) : super(key: key);
 
   @override
@@ -21,6 +23,7 @@ class TextInputWidget extends StatelessWidget {
       height: height,
       width: width,
       child: TextField(
+        enabled: enabled,
         controller: controller,
         obscureText: obsecure,
         decoration: InputDecoration(

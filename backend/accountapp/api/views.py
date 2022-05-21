@@ -2,9 +2,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from accountapp.api.serializers import RegistrationSerializer
+from accountapp.api.serializers import RegistrationSerializer, AccountPropertiesSerializer, PasswordUpdateSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
+from accountapp.models import Account
 
 
 @api_view(['POST',])
@@ -44,3 +45,33 @@ class CustomAuthToken(ObtainAuthToken):
             'user': user.username,
         })
     
+
+@api_view(['GET',])
+@permission_classes((IsAuthenticated,))
+def account_details_view(request):
+    try:
+        account = request.user
+    except Account.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = AccountPropertiesSerializer(account)
+        return Response(serializer.data)
+
+
+@api_view(['PUT',])
+@permission_classes((IsAuthenticated,))
+def account_update_view(request):
+    try:
+        account = request.user
+    except Account.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PUT':
+        serializer = PasswordUpdateSerializer(account, data=request.data)
+        data = {}
+        if serializer.is_valid():
+            serializer.save()
+            data['response'] = "Account update success"
+            return Response(data=data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

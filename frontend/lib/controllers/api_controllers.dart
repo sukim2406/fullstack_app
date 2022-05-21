@@ -90,6 +90,72 @@ class ApiControllers extends GetxController {
     }
   }
 
+  getAccount() async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+
+    String token = await PrefControllers.instance.getToken(pref);
+
+    var response = await http.get(
+      Uri.parse(
+        GlobalControllers.instance.getAccountUrl(),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
+    var jsonResponse = null;
+    if (response.statusCode == 200) {
+      jsonResponse = json.decode(response.body);
+      return jsonResponse;
+    } else {
+      return null;
+    }
+  }
+
+  updatePassword(data) async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+
+    String token = await PrefControllers.instance.getToken(pref);
+
+    var response = await http.put(
+      Uri.parse(
+        GlobalControllers.instance.getAccountUpdateUrl(),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+      body: data,
+    );
+    var jsonResponse = null;
+    if (response.statusCode == 200) {
+      jsonResponse = json.decode(response.body);
+      if (jsonResponse != null) {
+        if (jsonResponse['response'] == 'Account update success') {
+          print('jsonResponse = ' + jsonResponse.toString());
+          // pref.setString(
+          //   'token',
+          //   jsonResponse['token'],
+          // );
+          // pref.setString(
+          //   'curUser',
+          //   jsonResponse['username'],
+          // );
+          pref.remove('token');
+          pref.remove('curUser');
+          return null;
+        } else {
+          return jsonResponse.toString();
+        }
+      } else {
+        return 'jsonResponse null';
+      }
+    } else {
+      return response.body.toString();
+    }
+  }
+
   logout() async {
     SharedPreferences pref =
         await PrefControllers.instance.getSharedPreferences();

@@ -53,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               // Textfields
               TextInputWidget(
+                enabled: true,
                 height: GlobalControllers.instance.mediaHeight(context, .07),
                 width: GlobalControllers.instance.mediaWidth(context, .8),
                 controller: emailController,
@@ -60,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
                 obsecure: false,
               ),
               TextInputWidget(
+                enabled: true,
                 height: GlobalControllers.instance.mediaHeight(context, .07),
                 width: GlobalControllers.instance.mediaWidth(context, .8),
                 controller: passwordController,

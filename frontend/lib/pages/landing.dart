@@ -4,6 +4,7 @@ import '../controllers/global_controllers.dart';
 
 import '../pages/account.dart';
 import '../pages/tweet_list.dart';
+import '../pages/post_tweet.dart';
 
 import '../widgets/bottom_navbar.dart';
 
@@ -38,10 +39,7 @@ class _LandingPageState extends State<LandingPage> {
         'Newsfeed',
         style: GlobalControllers.instance.bottomNavBarTextStyles,
       ),
-      Text(
-        'Tweet',
-        style: GlobalControllers.instance.bottomNavBarTextStyles,
-      ),
+      PostTweet(),
       Text(
         'Topic',
         style: GlobalControllers.instance.bottomNavBarTextStyles,

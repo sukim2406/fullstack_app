@@ -46,6 +46,7 @@ class _AccountUpdatePageState extends State<AccountUpdatePage> {
                   ),
                 ),
                 TextInputWidget(
+                  enabled: true,
                   height: GlobalControllers.instance.mediaHeight(context, .07),
                   width: GlobalControllers.instance.mediaWidth(context, .7),
                   controller: nicknameController,
@@ -307,6 +308,9 @@ class _AccountUpdatePageState extends State<AccountUpdatePage> {
               if (result) {
                 widget.reload();
                 Navigator.pop(context);
+              } else {
+                GlobalControllers.instance.printErrorBar(context,
+                    'Update failed, most likely nickname already in use');
               }
             });
           } else {
