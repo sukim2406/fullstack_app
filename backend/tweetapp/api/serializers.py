@@ -7,7 +7,7 @@ class TweetSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Tweet
-        fields = ['title', 'body', 'image', 'date_updated', 'username']
+        fields = ['body', 'image', 'date_updated', 'username']
     
     def get_username_from_author(self, tweet):
         username = tweet.author.username

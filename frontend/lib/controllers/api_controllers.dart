@@ -241,4 +241,43 @@ class ApiControllers extends GetxController {
       return false;
     }
   }
+
+  postTweet(body, image) async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+    String curUser = await PrefControllers.instance.getCurUser(pref);
+
+    var request = await http.MultipartRequest(
+      'POST',
+      Uri.parse(
+        GlobalControllers.instance.postTweetUrl(),
+      ),
+    );
+
+    request.headers[HttpHeaders.authorizationHeader] = 'Token ' + token;
+
+    if (body != null) {
+      request.fields['body'] = body;
+    }
+
+    if (image != null) {
+      File file = File(image.path);
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'image',
+          file.readAsBytesSync(),
+          filename: image.path.split('/').last,
+        ),
+      );
+    }
+
+    var response = await request.send();
+    print('respone status code?' + response.statusCode.toString());
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

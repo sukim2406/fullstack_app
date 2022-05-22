@@ -44,6 +44,11 @@ class GlobalControllers extends GetxController {
     return profileUrl;
   }
 
+  postTweetUrl() {
+    String postTweetUrl = baseUrl + '/api/tweet/create/';
+    return postTweetUrl;
+  }
+
   updateProfileUrl(curUser) {
     String updateProfileUrl = baseUrl + '/api/profile/${curUser}/update/';
 
