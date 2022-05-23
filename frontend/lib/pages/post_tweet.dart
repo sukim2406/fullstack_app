@@ -30,7 +30,7 @@ class _PostTweetState extends State<PostTweet> {
 
   @override
   void initState() {
-    ApiControllers.instance.getProfile().then((value) {
+    ApiControllers.instance.getProfile('').then((value) {
       setState(
         () {
           profileData = value;
@@ -278,7 +278,17 @@ class _PostTweetState extends State<PostTweet> {
                     RoundedBtnWidget(
                         height: null,
                         width: null,
-                        func: () {},
+                        func: () async {
+                          try {
+                            var image = await ImagePicker.platform
+                                .pickImage(source: ImageSource.camera);
+                            setState(() {
+                              _image = image!;
+                            });
+                          } on PlatformException catch (e) {
+                            print('Failed to pick image: $e');
+                          }
+                        },
                         label: 'Take picture',
                         color: Colors.lightBlue),
                     Expanded(

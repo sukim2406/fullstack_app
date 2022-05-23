@@ -52,7 +52,7 @@ class _AccountPageState extends State<AccountPage>
         );
       },
     );
-    ApiControllers.instance.getProfile().then((value) {
+    ApiControllers.instance.getProfile(curUser).then((value) {
       setState(() {
         profileData = value;
       });
@@ -158,7 +158,7 @@ class _AccountPageState extends State<AccountPage>
                                   builder: (context) => AccountUpdatePage(
                                     reload: () {
                                       ApiControllers.instance
-                                          .getProfile()
+                                          .getProfile(curUser)
                                           .then((value) {
                                         setState(() {
                                           profileData = value;

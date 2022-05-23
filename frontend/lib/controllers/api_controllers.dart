@@ -177,7 +177,7 @@ class ApiControllers extends GetxController {
     }
   }
 
-  getProfile() async {
+  getProfile(String targetUser) async {
     SharedPreferences pref =
         await PrefControllers.instance.getSharedPreferences();
     String token = await PrefControllers.instance.getToken(pref);
@@ -185,7 +185,9 @@ class ApiControllers extends GetxController {
 
     var response = await http.get(
       Uri.parse(
-        GlobalControllers.instance.getProfileUrl(curUser),
+        (targetUser.isNotEmpty)
+            ? GlobalControllers.instance.getProfileUrl(targetUser)
+            : GlobalControllers.instance.getProfileUrl(curUser),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
@@ -278,6 +280,31 @@ class ApiControllers extends GetxController {
       return true;
     } else {
       return false;
+    }
+  }
+
+  getTweetList(String nextPage) async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+    String curUser = await PrefControllers.instance.getCurUser(pref);
+
+    var response = await http.get(
+      nextPage.isNotEmpty
+          ? Uri.parse(nextPage)
+          : Uri.parse(
+              GlobalControllers.instance.tweetListUrl(),
+            ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
+    var jsonResponse = null;
+    if (response.statusCode == 200) {
+      jsonResponse = json.decode(response.body);
+      return jsonResponse;
+    } else {
+      return null;
     }
   }
 }

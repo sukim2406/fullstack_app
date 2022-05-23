@@ -83,8 +83,19 @@ def api_create_tweet_view(request):
 
 
 class ApiTweetListView(ListAPIView):
-    queryset = Tweet.objects.all()
+    queryset = Tweet.objects.all().order_by('-date_updated')
     serializer_class = TweetSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     pagination_class = PageNumberPagination
+
+
+# class ApiTweetAuthorListView(ListAPIView):
+#     serializer_class = TweetSerializer
+#     authentication_classes = (TokenAuthentication,)
+#     permission_classes = (IsAuthenticated,)
+#     pagination_class = PageNumberPagination
+#     def get_queryset(self):
+#         username = self.kwargs['author']
+#         queryset = Tweet.objects.filter(username = username)
+#         return queryset.order_by('-date_updated')

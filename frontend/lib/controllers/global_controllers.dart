@@ -38,8 +38,8 @@ class GlobalControllers extends GetxController {
     return accountUpdateUrl;
   }
 
-  getProfileUrl(curUser) {
-    String profileUrl = baseUrl + '/api/profile/${curUser}/detail/';
+  getProfileUrl(target) {
+    String profileUrl = baseUrl + '/api/profile/${target}/detail/';
 
     return profileUrl;
   }
@@ -53,6 +53,11 @@ class GlobalControllers extends GetxController {
     String updateProfileUrl = baseUrl + '/api/profile/${curUser}/update/';
 
     return updateProfileUrl;
+  }
+
+  tweetListUrl() {
+    String tweetListUrl = baseUrl + '/api/tweet/list/';
+    return tweetListUrl;
   }
 
   // get / set size

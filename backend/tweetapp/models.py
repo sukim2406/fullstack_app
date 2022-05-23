@@ -38,6 +38,6 @@ def submission_delete(sender, instance, **kwargs):
 def pre_save_tweet_receiver(sender, instance, *args, **kwargs):
     now = datetime.datetime.now()
     if not instance.slug:
-        instance.slug = slugify(instance.author.username + "-" + now.strftime('%Y%m%d%H%M'))
+        instance.slug = slugify(instance.author.username + "-" + now.strftime('%Y%m%d%H%M%S'))
     
 pre_save.connect(pre_save_tweet_receiver, sender=Tweet)

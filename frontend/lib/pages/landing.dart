@@ -5,6 +5,7 @@ import '../controllers/global_controllers.dart';
 import '../pages/account.dart';
 import '../pages/tweet_list.dart';
 import '../pages/post_tweet.dart';
+import '../pages/newsfeed.dart';
 
 import '../widgets/bottom_navbar.dart';
 
@@ -35,10 +36,7 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> bottomNavBarPages = [
-      Text(
-        'Newsfeed',
-        style: GlobalControllers.instance.bottomNavBarTextStyles,
-      ),
+      NewsfeedPage(),
       PostTweet(),
       Text(
         'Topic',

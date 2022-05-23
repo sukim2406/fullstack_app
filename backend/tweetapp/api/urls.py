@@ -9,4 +9,5 @@ urlpatterns = [
     path('<slug>/delete/', api_delete_tweet_view, name="delete"),
     path('create/', api_create_tweet_view, name="create"),
     path('list/', ApiTweetListView.as_view(), name="list"),
+    # path()
 ]

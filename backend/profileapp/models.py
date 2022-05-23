@@ -20,6 +20,9 @@ class Profile(models.Model):
     message = models.CharField(max_length=200, null=True)
     slug =  models.SlugField(blank=True, unique=True)
 
+    def __str__(self):
+        return self.slug
+
 @receiver(post_delete, sender=Profile)
 def submission_delete(sender, instance, **kwargs):
     instance.image.delete(False)

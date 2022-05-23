@@ -280,7 +280,9 @@ class _AccountUpdatePageState extends State<AccountUpdatePage> {
     // TODO: implement initState
     super.initState();
     nicknameController.text = widget.profileData['nickname'];
-    messageController.text = widget.profileData['message'];
+    messageController.text = (widget.profileData['message'] != null)
+        ? widget.profileData['message']
+        : '';
   }
 
   @override
