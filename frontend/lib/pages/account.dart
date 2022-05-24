@@ -79,11 +79,11 @@ class _AccountPageState extends State<AccountPage>
     _scrollController = ScrollController()..addListener(_loadMore);
   }
 
-  @override
-  void dispose() {
-    _scrollController.removeListener(_loadMore);
-    super.dispose;
-  }
+  // @override
+  // void dispose() {
+  //   _scrollController.removeListener(_loadMore);
+  //   super.dispose;
+  // }
 
   logout() {
     ApiControllers.instance.logout().then((result) {
@@ -289,14 +289,18 @@ class _AccountPageState extends State<AccountPage>
             ),
             SizedBox(
               width: GlobalControllers.instance.mediaWidth(context, .80),
-              child: Text(
-                (profileData['nickname'] != null)
-                    ? profileData['nickname']
-                    : 'null',
-                style: GoogleFonts.nunito(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.5,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  (profileData['nickname'] != null)
+                      ? profileData['nickname']
+                      : 'null',
+                  style: GoogleFonts.nunito(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                  ),
                 ),
               ),
             ),
@@ -304,8 +308,8 @@ class _AccountPageState extends State<AccountPage>
               width: GlobalControllers.instance.mediaWidth(context, .80),
               child: Text(
                 (profileData['username'] != null)
-                    ? profileData['username']
-                    : 'null',
+                    ? '@' + profileData['username']
+                    : '@username',
                 style: GoogleFonts.nunito(
                   fontSize: 15,
                 ),

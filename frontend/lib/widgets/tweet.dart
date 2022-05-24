@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/global_controllers.dart';
 
@@ -50,9 +51,30 @@ class Tweet extends StatelessWidget {
                         children: [
                           Text(
                             tweetData['nickname'],
-                            style: const TextStyle(fontSize: 20),
+                            style: GoogleFonts.nunito(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          Text('@' + tweetData['username']),
+                          Expanded(
+                            child: Container(),
+                          ),
+                          const Icon(Icons.more_vert),
+                          SizedBox(
+                            width: GlobalControllers.instance
+                                .mediaWidth(context, .02),
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      child: Row(
+                        children: [
+                          Text(
+                            '@' + tweetData['username'],
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.nunito(),
+                          ),
                           Expanded(
                             child: Container(),
                           ),
@@ -70,12 +92,7 @@ class Tweet extends StatelessWidget {
                           ),
                           SizedBox(
                             width: GlobalControllers.instance
-                                .mediaWidth(context, .02),
-                          ),
-                          const Icon(Icons.more_vert),
-                          SizedBox(
-                            width: GlobalControllers.instance
-                                .mediaWidth(context, .02),
+                                .mediaWidth(context, .04),
                           )
                         ],
                       ),

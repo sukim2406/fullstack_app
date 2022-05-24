@@ -178,43 +178,79 @@ class _PostTweetState extends State<PostTweet> {
                                   profileData['image'],
                             ),
                     ),
-                    SizedBox(
+                    Container(
+                      padding: const EdgeInsets.only(
+                        left: 10,
+                      ),
                       height:
                           GlobalControllers.instance.mediaHeight(context, .07),
                       width:
                           GlobalControllers.instance.mediaWidth(context, .75),
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: GlobalControllers.instance
-                                .mediaWidth(context, .05),
-                          ),
-                          RichText(
-                            text: TextSpan(
-                              text: (profileData['nickname'] != null)
-                                  ? profileData['nickname']
-                                  : 'Nickname',
-                              style: GoogleFonts.dosis(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 30,
-                              ),
-                              children: [
-                                const TextSpan(text: '\t\t'),
-                                TextSpan(
-                                  text: (profileData['username'] != null)
-                                      ? '@' + profileData['username']
-                                      : '@username',
+                          (profileData['nickname'] != null)
+                              ? Text(
+                                  profileData['nickname'],
                                   style: GoogleFonts.dosis(
-                                    color: Colors.grey,
-                                    fontSize: 25,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 30,
+                                  ),
+                                )
+                              : Text(
+                                  'Nickaname',
+                                  style: GoogleFonts.dosis(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 30,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
+                          (profileData['username'] != null)
+                              ? Text(
+                                  '@' + profileData['username'],
+                                  style: GoogleFonts.dosis(
+                                      color: Colors.grey, fontSize: 20),
+                                )
+                              : Text(
+                                  '@username',
+                                  style: GoogleFonts.dosis(
+                                      color: Colors.grey, fontSize: 20),
+                                )
                         ],
                       ),
+                      // Row(
+                      //   children: [
+                      //     SizedBox(
+                      //       width: GlobalControllers.instance
+                      //           .mediaWidth(context, .05),
+                      //     ),
+                      //     RichText(
+                      //       text: TextSpan(
+                      //         text: (profileData['nickname'] != null)
+                      //             ? profileData['nickname']
+                      //             : 'Nickname',
+                      //         style: GoogleFonts.dosis(
+                      //           color: Colors.black,
+                      //           fontWeight: FontWeight.bold,
+                      //           fontSize: 30,
+                      //         ),
+                      //         children: [
+                      //           const TextSpan(text: '\t\t'),
+                      //           TextSpan(
+                      //             text: (profileData['username'] != null)
+                      //                 ? '@' + profileData['username']
+                      //                 : '@username',
+                      //             style: GoogleFonts.dosis(
+                      //               color: Colors.grey,
+                      //               fontSize: 25,
+                      //             ),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                     ),
                   ],
                 ),
