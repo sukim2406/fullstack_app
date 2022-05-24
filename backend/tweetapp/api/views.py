@@ -90,12 +90,12 @@ class ApiTweetListView(ListAPIView):
     pagination_class = PageNumberPagination
 
 
-# class ApiTweetAuthorListView(ListAPIView):
-#     serializer_class = TweetSerializer
-#     authentication_classes = (TokenAuthentication,)
-#     permission_classes = (IsAuthenticated,)
-#     pagination_class = PageNumberPagination
-#     def get_queryset(self):
-#         username = self.kwargs['author']
-#         queryset = Tweet.objects.filter(username = username)
-#         return queryset.order_by('-date_updated')
+class ApiTweetAuthorListView(ListAPIView):
+    serializer_class = TweetSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    pagination_class = PageNumberPagination
+    def get_queryset(self):
+        username = self.kwargs['slug']
+        queryset = Tweet.objects.all().filter(username = username)
+        return queryset.order_by('-date_updated')

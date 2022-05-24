@@ -24,7 +24,8 @@ class Tweet(models.Model):
     image = models.ImageField(upload_to=upload_location, null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True, verbose_name="date created")
     date_updated = models.DateTimeField(auto_now=True, verbose_name="date updated")
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) 
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    username = models.CharField(max_length=30, blank=True) 
     slug = models.SlugField(blank=True, unique=True)
 
     def __str__(self):
@@ -39,5 +40,6 @@ def pre_save_tweet_receiver(sender, instance, *args, **kwargs):
     now = datetime.datetime.now()
     if not instance.slug:
         instance.slug = slugify(instance.author.username + "-" + now.strftime('%Y%m%d%H%M%S'))
+        instance.username = instance.author.username
     
 pre_save.connect(pre_save_tweet_receiver, sender=Tweet)

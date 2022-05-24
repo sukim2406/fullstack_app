@@ -10,6 +10,7 @@ import '../pages/account_update.dart';
 import '../pages/password_update.dart';
 
 import '../widgets/rounded_btn.dart';
+import '../widgets/tweet.dart';
 
 class AccountPage extends StatefulWidget {
   final VoidCallback updateCurUserLogout;
@@ -27,9 +28,15 @@ class _AccountPageState extends State<AccountPage>
   late SharedPreferences pref;
   String token = '';
   String curUser = '';
+  String curUserEmail = '';
   Map profileData = {};
   Map accountData = {};
   late TabController _tabController;
+  String _nextPage = '';
+  bool _initLoading = true;
+  bool _addLoading = false;
+  final List _tweets = [];
+  late ScrollController _scrollController;
 
   @override
   void initState() {
@@ -62,11 +69,20 @@ class _AccountPageState extends State<AccountPage>
         setState(
           () {
             accountData = value;
+            print('accountData  = ' + accountData.toString());
+            _initialLoad();
           },
         );
       },
     );
     _tabController = new TabController(length: 3, vsync: this);
+    _scrollController = ScrollController()..addListener(_loadMore);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_loadMore);
+    super.dispose;
   }
 
   logout() {
@@ -75,6 +91,74 @@ class _AccountPageState extends State<AccountPage>
         widget.updateCurUserLogout();
       }
     });
+  }
+
+  void _initialLoad() async {
+    setState(() {
+      _initLoading = true;
+    });
+    try {
+      var data =
+          await ApiControllers.instance.getUserTweets(accountData['username']);
+
+      print('data = ' + data.toString());
+      for (var tweet in data['results']) {
+        var profileData =
+            await ApiControllers.instance.getProfile(tweet['username']);
+        tweet['nickname'] = profileData['nickname'];
+        tweet['profileImage'] = profileData['image'];
+        _tweets.add(tweet);
+      }
+
+      if (data['next'] != null) {
+        setState(
+          () {
+            _nextPage = data['next'];
+          },
+        );
+      }
+
+      setState(() {
+        _initLoading = false;
+      });
+    } catch (error) {
+      GlobalControllers.instance
+          .printErrorBar(context, 'Initial Load Error : ' + error.toString());
+    }
+  }
+
+  void _loadMore() async {
+    if (_nextPage.isNotEmpty &&
+        !_initLoading &&
+        !_addLoading &&
+        _scrollController.position.extentAfter < 300) {
+      setState(() {
+        _addLoading = true;
+      });
+      try {
+        var data = await ApiControllers.instance.getTweetList(_nextPage);
+        for (var tweet in data['results']) {
+          var profileData =
+              await ApiControllers.instance.getProfile(tweet['username']);
+          tweet['nickname'] = profileData['nickname'];
+          tweet['profileImage'] = profileData['image'];
+          _tweets.add(tweet);
+        }
+        if (data['next'] != null) {
+          setState(() {
+            _nextPage = data['next'];
+          });
+        } else {
+          _nextPage = '';
+        }
+        setState(() {
+          _addLoading = false;
+        });
+      } catch (error) {
+        GlobalControllers.instance
+            .printErrorBar(context, 'loadMore = ' + error.toString());
+      }
+    }
   }
 
   @override
@@ -276,10 +360,13 @@ class _AccountPageState extends State<AccountPage>
                   Expanded(
                     child: TabBarView(
                       controller: _tabController,
-                      children: const [
+                      children: [
                         Center(
-                          child: Text(
-                            'Screen 1',
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            itemCount: _tweets.length,
+                            itemBuilder: (_, index) =>
+                                Tweet(tweetData: _tweets[index]),
                           ),
                         ),
                         Center(

@@ -60,6 +60,11 @@ class GlobalControllers extends GetxController {
     return tweetListUrl;
   }
 
+  userTweetUrl(author) {
+    String userTweetUrl = baseUrl + '/api/tweet/${author}/tweets/';
+    return userTweetUrl;
+  }
+
   // get / set size
   mediaHeight(context, multiple) {
     var height = MediaQuery.of(context).size.height * multiple;
