@@ -329,4 +329,27 @@ class ApiControllers extends GetxController {
       return null;
     }
   }
+
+  likeTweet() async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+
+    var response = await http.post(
+      Uri.parse(
+        GlobalControllers.instance.likeTweetUrl(),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
+
+    var jsonResponse = null;
+    if (response.statusCode == 200) {
+      jsonResponse = json.decode(response.body);
+      return jsonResponse;
+    } else {
+      return null;
+    }
+  }
 }

@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'accountapp',
     'tweetapp',
     'profileapp',
+    'likeapp',
 ]
 
 MIDDLEWARE = [

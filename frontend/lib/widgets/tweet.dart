@@ -2,13 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/global_controllers.dart';
+import '../controllers/api_controllers.dart';
 
-class Tweet extends StatelessWidget {
+class Tweet extends StatefulWidget {
   final Map tweetData;
   const Tweet({
     Key? key,
     required this.tweetData,
   }) : super(key: key);
+
+  @override
+  State<Tweet> createState() => _TweetState();
+}
+
+class _TweetState extends State<Tweet> {
+  bool _liked = false;
+  bool _retweeted = false;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +35,7 @@ class Tweet extends StatelessWidget {
                 width: GlobalControllers.instance.mediaWidth(context, .15),
                 child: CircleAvatar(
                   radius: GlobalControllers.instance.mediaHeight(context, .025),
-                  child: (tweetData['profileImage'] == null)
+                  child: (widget.tweetData['profileImage'] == null)
                       ? Icon(
                           Icons.person,
                           size: GlobalControllers.instance
@@ -34,11 +43,11 @@ class Tweet extends StatelessWidget {
                           color: Colors.lightBlue,
                         )
                       : null,
-                  backgroundImage: (tweetData['profileImage'] == null)
+                  backgroundImage: (widget.tweetData['profileImage'] == null)
                       ? null
                       : NetworkImage(
                           GlobalControllers.instance.baseUrl +
-                              tweetData['profileImage'],
+                              widget.tweetData['profileImage'],
                         ),
                 ),
               ),
@@ -50,7 +59,7 @@ class Tweet extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            tweetData['nickname'],
+                            widget.tweetData['nickname'],
                             style: GoogleFonts.nunito(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -71,7 +80,7 @@ class Tweet extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            '@' + tweetData['username'],
+                            '@' + widget.tweetData['username'],
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.nunito(),
                           ),
@@ -79,11 +88,11 @@ class Tweet extends StatelessWidget {
                             child: Container(),
                           ),
                           Text(
-                            tweetData['date_updated']
+                            widget.tweetData['date_updated']
                                     .toString()
                                     .substring(0, 10) +
                                 ' ' +
-                                tweetData['date_updated']
+                                widget.tweetData['date_updated']
                                     .toString()
                                     .substring(11, 16),
                             style: const TextStyle(
@@ -103,13 +112,13 @@ class Tweet extends StatelessWidget {
                     ),
                     SizedBox(
                       width: GlobalControllers.instance.mediaWidth(context, .9),
-                      child: Text(tweetData['body']),
+                      child: Text(widget.tweetData['body']),
                     ),
                     SizedBox(
                       height:
                           GlobalControllers.instance.mediaHeight(context, .01),
                     ),
-                    tweetData['image'] != null
+                    widget.tweetData['image'] != null
                         ? Column(
                             children: [
                               SizedBox(
@@ -118,7 +127,7 @@ class Tweet extends StatelessWidget {
                                 width: GlobalControllers.instance
                                     .mediaWidth(context, .8),
                                 child: Image.network(
-                                  tweetData['image'],
+                                  widget.tweetData['image'],
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -136,11 +145,82 @@ class Tweet extends StatelessWidget {
                         children: [
                           const Icon(Icons.chat_bubble_outline),
                           Expanded(child: Container()),
-                          const Icon(Icons.favorite_border),
+                          GestureDetector(
+                            onTap: () {
+                              ApiControllers.instance
+                                  .likeTweet()
+                                  .then((result) {
+                                print(result);
+
+                                setState(() {
+                                  _liked = !_liked;
+                                  print(widget.tweetData);
+                                });
+                              });
+                            },
+                            child: (_liked)
+                                ? const Icon(
+                                    Icons.favorite,
+                                    color: Colors.lightBlue,
+                                  )
+                                : const Icon(
+                                    Icons.favorite_border,
+                                  ),
+                            // Icon(
+                            //   (_liked) ? Icons.favorite : Icons.favorite_border,
+                            // ),
+                          ),
                           Expanded(child: Container()),
                           const Icon(Icons.share),
                           Expanded(child: Container()),
-                          const Icon(Icons.autorenew),
+                          GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _retweeted = !_retweeted;
+                                          });
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text(
+                                          (_retweeted)
+                                              ? 'Undo Retweet'
+                                              : 'Retweet',
+                                          style: const TextStyle(
+                                            color: Colors.lightBlue,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: (_retweeted)
+                                ? const Icon(
+                                    Icons.autorenew,
+                                    color: Colors.lightBlue,
+                                  )
+                                : const Icon(
+                                    Icons.autorenew,
+                                  ),
+                          ),
                           Expanded(child: Container()),
                         ],
                       ),

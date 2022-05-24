@@ -65,6 +65,11 @@ class GlobalControllers extends GetxController {
     return userTweetUrl;
   }
 
+  likeTweetUrl() {
+    String likeTweetUrl = baseUrl + '/api/like/create/';
+    return likeTweetUrl;
+  }
+
   // get / set size
   mediaHeight(context, multiple) {
     var height = MediaQuery.of(context).size.height * multiple;
