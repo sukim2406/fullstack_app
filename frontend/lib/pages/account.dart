@@ -32,11 +32,16 @@ class _AccountPageState extends State<AccountPage>
   Map profileData = {};
   Map accountData = {};
   late TabController _tabController;
-  String _nextPage = '';
-  bool _initLoading = true;
-  bool _addLoading = false;
-  final List _tweets = [];
-  late ScrollController _scrollController;
+  String _myTweetNextPage = '';
+  bool _initMyTweetLoading = true;
+  bool _addMyTweetLoading = false;
+  final List _myTweets = [];
+  late ScrollController _myTweetScrollController;
+  String _likedTweetNextPage = '';
+  bool _initLikedTweetLoading = true;
+  bool _addLikedTweetLoading = false;
+  final List _likedTweets = [];
+  late ScrollController _likedTweetScrollController;
 
   @override
   void initState() {
@@ -69,14 +74,17 @@ class _AccountPageState extends State<AccountPage>
         setState(
           () {
             accountData = value;
-            print('accountData  = ' + accountData.toString());
-            _initialLoad();
+            _initialMyTweetLoad();
+            _initialLikedTweetLoad();
           },
         );
       },
     );
     _tabController = new TabController(length: 3, vsync: this);
-    _scrollController = ScrollController()..addListener(_loadMore);
+    _myTweetScrollController = ScrollController()
+      ..addListener(_myTweetLoadMore);
+    _likedTweetScrollController = ScrollController()
+      ..addListener(_likedTweetLoadMore);
   }
 
   // @override
@@ -93,33 +101,107 @@ class _AccountPageState extends State<AccountPage>
     });
   }
 
-  void _initialLoad() async {
+  void _initialLikedTweetLoad() async {
     setState(() {
-      _initLoading = true;
+      _initLikedTweetLoading = true;
     });
     try {
-      var data =
-          await ApiControllers.instance.getUserTweets(accountData['username']);
-
-      print('data = ' + data.toString());
-      for (var tweet in data['results']) {
+      var data = await ApiControllers.instance.getLikedTweets();
+      for (var liked in data['results']) {
+        var tweet =
+            await ApiControllers.instance.getSingleTweet(liked['tweetSlug']);
         var profileData =
             await ApiControllers.instance.getProfile(tweet['username']);
+        if (tweet['image'] != null) {
+          tweet['image'] = GlobalControllers.instance.baseUrl + tweet['image'];
+        }
         tweet['nickname'] = profileData['nickname'];
         tweet['profileImage'] = profileData['image'];
-        _tweets.add(tweet);
+        _likedTweets.add(tweet);
       }
-
       if (data['next'] != null) {
         setState(
           () {
-            _nextPage = data['next'];
+            _likedTweetNextPage = data['next'];
           },
         );
       }
 
       setState(() {
-        _initLoading = false;
+        _initLikedTweetLoading = false;
+      });
+    } catch (error) {
+      GlobalControllers.instance.printErrorBar(
+          context, 'Initial Liked Tweet Load Error : ' + error.toString());
+    }
+  }
+
+  void _likedTweetLoadMore() async {
+    if (_likedTweetNextPage.isNotEmpty &&
+        !_initLikedTweetLoading &&
+        !_addLikedTweetLoading &&
+        _likedTweetScrollController.position.extentAfter < 300) {
+      setState(() {
+        _addLikedTweetLoading = true;
+      });
+      try {
+        var data = await ApiControllers.instance.getLikedTweets();
+        for (var liked in data['results']) {
+          var tweet =
+              await ApiControllers.instance.getSingleTweet(liked['tweetSlug']);
+          var profileData =
+              await ApiControllers.instance.getProfile(tweet['username']);
+          if (tweet['image'] != null) {
+            tweet['image'] =
+                GlobalControllers.instance.baseUrl + tweet['image'];
+          }
+          tweet['nickname'] = profileData['nickname'];
+          tweet['profileImage'] = profileData['image'];
+          _likedTweets.add(tweet);
+        }
+        if (data['next'] != null) {
+          setState(() {
+            _likedTweetNextPage = data['next'];
+          });
+        } else {
+          _likedTweetNextPage = '';
+        }
+        setState(() {
+          _addLikedTweetLoading = false;
+        });
+      } catch (error) {
+        GlobalControllers.instance
+            .printErrorBar(context, 'loadMore = ' + error.toString());
+      }
+    }
+  }
+
+  void _initialMyTweetLoad() async {
+    setState(() {
+      _initMyTweetLoading = true;
+    });
+    try {
+      var data =
+          await ApiControllers.instance.getUserTweets(accountData['username']);
+
+      for (var tweet in data['results']) {
+        var profileData =
+            await ApiControllers.instance.getProfile(tweet['username']);
+        tweet['nickname'] = profileData['nickname'];
+        tweet['profileImage'] = profileData['image'];
+        _myTweets.add(tweet);
+      }
+
+      if (data['next'] != null) {
+        setState(
+          () {
+            _myTweetNextPage = data['next'];
+          },
+        );
+      }
+
+      setState(() {
+        _initMyTweetLoading = false;
       });
     } catch (error) {
       GlobalControllers.instance
@@ -127,32 +209,32 @@ class _AccountPageState extends State<AccountPage>
     }
   }
 
-  void _loadMore() async {
-    if (_nextPage.isNotEmpty &&
-        !_initLoading &&
-        !_addLoading &&
-        _scrollController.position.extentAfter < 300) {
+  void _myTweetLoadMore() async {
+    if (_myTweetNextPage.isNotEmpty &&
+        !_initMyTweetLoading &&
+        !_addMyTweetLoading &&
+        _myTweetScrollController.position.extentAfter < 300) {
       setState(() {
-        _addLoading = true;
+        _addMyTweetLoading = true;
       });
       try {
-        var data = await ApiControllers.instance.getTweetList(_nextPage);
+        var data = await ApiControllers.instance.getTweetList(_myTweetNextPage);
         for (var tweet in data['results']) {
           var profileData =
               await ApiControllers.instance.getProfile(tweet['username']);
           tweet['nickname'] = profileData['nickname'];
           tweet['profileImage'] = profileData['image'];
-          _tweets.add(tweet);
+          _myTweets.add(tweet);
         }
         if (data['next'] != null) {
           setState(() {
-            _nextPage = data['next'];
+            _myTweetNextPage = data['next'];
           });
         } else {
-          _nextPage = '';
+          _myTweetNextPage = '';
         }
         setState(() {
-          _addLoading = false;
+          _addMyTweetLoading = false;
         });
       } catch (error) {
         GlobalControllers.instance
@@ -163,8 +245,6 @@ class _AccountPageState extends State<AccountPage>
 
   @override
   Widget build(BuildContext context) {
-    print(profileData.toString());
-    print(accountData.toString());
     return Scaffold(
       body: Container(
         height: GlobalControllers.instance.mediaHeight(context, .94),
@@ -367,15 +447,18 @@ class _AccountPageState extends State<AccountPage>
                       children: [
                         Center(
                           child: ListView.builder(
-                            controller: _scrollController,
-                            itemCount: _tweets.length,
+                            controller: _myTweetScrollController,
+                            itemCount: _myTweets.length,
                             itemBuilder: (_, index) =>
-                                Tweet(tweetData: _tweets[index]),
+                                Tweet(tweetData: _myTweets[index]),
                           ),
                         ),
                         Center(
-                          child: Text(
-                            'Screen 2',
+                          child: ListView.builder(
+                            controller: _likedTweetScrollController,
+                            itemCount: _likedTweets.length,
+                            itemBuilder: (_, index) =>
+                                Tweet(tweetData: _likedTweets[index]),
                           ),
                         ),
                         Center(

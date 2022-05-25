@@ -64,12 +64,10 @@ class ApiControllers extends GetxController {
       ),
       body: data,
     );
-    print('statuscode = ' + response.statusCode.toString());
     if (response.statusCode == 200) {
       jsonResponse = json.decode(response.body);
       if (jsonResponse != null) {
         if (jsonResponse['response'] == 'successfully registered a new user') {
-          print('jsonResponse = ' + jsonResponse.toString());
           pref.setString(
             'token',
             jsonResponse['token'],
@@ -133,7 +131,6 @@ class ApiControllers extends GetxController {
       jsonResponse = json.decode(response.body);
       if (jsonResponse != null) {
         if (jsonResponse['response'] == 'Account update success') {
-          print('jsonResponse = ' + jsonResponse.toString());
           // pref.setString(
           //   'token',
           //   jsonResponse['token'],
@@ -275,7 +272,6 @@ class ApiControllers extends GetxController {
     }
 
     var response = await request.send();
-    print('respone status code?' + response.statusCode.toString());
     if (response.statusCode == 201) {
       return true;
     } else {
@@ -330,10 +326,15 @@ class ApiControllers extends GetxController {
     }
   }
 
-  likeTweet() async {
+  likeTweet(userSlug, tweetSlug) async {
     SharedPreferences pref =
         await PrefControllers.instance.getSharedPreferences();
     String token = await PrefControllers.instance.getToken(pref);
+
+    Map data = {
+      'userSlug': userSlug,
+      'tweetSlug': tweetSlug,
+    };
 
     var response = await http.post(
       Uri.parse(
@@ -342,14 +343,102 @@ class ApiControllers extends GetxController {
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
+      body: data,
     );
 
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  getLikedByUser(userSlug, tweetSlug) async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+    String slug = userSlug + '-' + tweetSlug;
+
+    var response = await http.get(
+      Uri.parse(
+        GlobalControllers.instance.likedByUserUrl(slug),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  unlikeTweet(userSlug, tweetSlug) async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+    String slug = userSlug + '-' + tweetSlug;
+
+    var response = await http.delete(
+      Uri.parse(
+        GlobalControllers.instance.unlikeTweetUrl(slug),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  getLikedTweets() async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+    String curUser = await PrefControllers.instance.getCurUser(pref);
+
+    var response = await http.get(
+      Uri.parse(
+        GlobalControllers.instance.likedTweetListUrl(curUser),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
     var jsonResponse = null;
     if (response.statusCode == 200) {
       jsonResponse = json.decode(response.body);
       return jsonResponse;
     } else {
-      return null;
+      jsonResponse = json.decode(response.body);
+      return jsonResponse;
+    }
+  }
+
+  getSingleTweet(slug) async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+    var response = await http.get(
+      Uri.parse(
+        GlobalControllers.instance.singleTweetUrl(slug),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
+    var jsonResponse = null;
+    if (response.statusCode == 200) {
+      jsonResponse = json.decode(response.body);
+      return jsonResponse;
+    } else {
+      jsonResponse = json.decode(response.body);
+      return jsonResponse;
     }
   }
 }

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/global_controllers.dart';
 import '../controllers/api_controllers.dart';
+import '../controllers/pref_controllers.dart';
 
 class Tweet extends StatefulWidget {
   final Map tweetData;
@@ -18,6 +19,31 @@ class Tweet extends StatefulWidget {
 class _TweetState extends State<Tweet> {
   bool _liked = false;
   bool _retweeted = false;
+  String _curUser = '';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    PrefControllers.instance.getSharedPreferences().then(
+      (value) {
+        PrefControllers.instance.getCurUser(value).then(
+          (curUser) {
+            setState(() {
+              _curUser = curUser;
+            });
+            ApiControllers.instance
+                .getLikedByUser(_curUser, widget.tweetData['slug'])
+                .then((result) {
+              setState(() {
+                _liked = result;
+              });
+            });
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,16 +173,47 @@ class _TweetState extends State<Tweet> {
                           Expanded(child: Container()),
                           GestureDetector(
                             onTap: () {
-                              ApiControllers.instance
-                                  .likeTweet()
-                                  .then((result) {
-                                print(result);
-
-                                setState(() {
-                                  _liked = !_liked;
-                                  print(widget.tweetData);
-                                });
-                              });
+                              _liked
+                                  ? ApiControllers.instance
+                                      .unlikeTweet(
+                                      _curUser,
+                                      widget.tweetData['slug'],
+                                    )
+                                      .then(
+                                      (result) {
+                                        if (result) {
+                                          setState(
+                                            () {
+                                              _liked = !_liked;
+                                            },
+                                          );
+                                        } else {
+                                          GlobalControllers.instance.printErrorBar(
+                                              context,
+                                              'Unlike unsuccessful, something went wrong');
+                                        }
+                                      },
+                                    )
+                                  : ApiControllers.instance
+                                      .likeTweet(
+                                      _curUser,
+                                      widget.tweetData['slug'],
+                                    )
+                                      .then(
+                                      (result) {
+                                        if (result) {
+                                          setState(
+                                            () {
+                                              _liked = !_liked;
+                                            },
+                                          );
+                                        } else {
+                                          GlobalControllers.instance.printErrorBar(
+                                              context,
+                                              'Like unsuccessful, something went wrong');
+                                        }
+                                      },
+                                    );
                             },
                             child: (_liked)
                                 ? const Icon(

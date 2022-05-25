@@ -12,13 +12,11 @@ class PrefControllers extends GetxController {
 
   Future getToken(pref) async {
     var token = await pref.getString('token') ?? '';
-    print('token = ' + token);
     return token;
   }
 
   Future getCurUser(pref) async {
     var curUser = await pref.getString('curUser') ?? '';
-    print('curUser = ' + curUser);
     return curUser;
   }
 }

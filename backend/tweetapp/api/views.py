@@ -20,7 +20,7 @@ def api_detail_tweet_view(request, slug):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == 'GET':
-        serializer = TweetSerializer(Tweet)
+        serializer = TweetSerializer(tweet)
         return Response(serializer.data)
 
 

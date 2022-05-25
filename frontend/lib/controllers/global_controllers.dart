@@ -70,6 +70,26 @@ class GlobalControllers extends GetxController {
     return likeTweetUrl;
   }
 
+  likedByUserUrl(slug) {
+    String likedByUserUrl = baseUrl + '/api/like/${slug}/detail/';
+    return likedByUserUrl;
+  }
+
+  unlikeTweetUrl(slug) {
+    String unlikeTweetUrl = baseUrl + '/api/like/${slug}/unlike/';
+    return unlikeTweetUrl;
+  }
+
+  likedTweetListUrl(username) {
+    String likedTweetListUrl = baseUrl + '/api/like/${username}/list/';
+    return likedTweetListUrl;
+  }
+
+  singleTweetUrl(slug) {
+    String singleTweetUrl = baseUrl + '/api/tweet/${slug}/detail/';
+    return singleTweetUrl;
+  }
+
   // get / set size
   mediaHeight(context, multiple) {
     var height = MediaQuery.of(context).size.height * multiple;
