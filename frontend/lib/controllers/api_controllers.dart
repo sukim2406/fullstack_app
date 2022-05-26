@@ -444,4 +444,31 @@ class ApiControllers extends GetxController {
       return null;
     }
   }
+
+  retweet(userSlug, tweetSlug) async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+
+    Map data = {
+      'userSlug': userSlug,
+      'tweetSlug': tweetSlug,
+    };
+
+    var response = await http.post(
+      Uri.parse(
+        GlobalControllers.instance.retweetUrl(),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+      body: data,
+    );
+
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

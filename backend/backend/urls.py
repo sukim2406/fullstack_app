@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/tweet/', include('tweetapp.api.urls', 'tweet_api')),
     path('api/profile/', include('profileapp.api.urls', 'profile_api')),
     path('api/like/', include('likeapp.api.urls', 'like_api')),
+    path('api/retweet/', include('retweetapp.api.urls', 'retweet_api')),
 ]
 
 if settings.DEBUG:

@@ -284,8 +284,6 @@ class _TweetState extends State<Tweet> {
                             // ),
                           ),
                           Expanded(child: Container()),
-                          const Icon(Icons.share),
-                          Expanded(child: Container()),
                           GestureDetector(
                             onTap: () {
                               showDialog(
@@ -306,9 +304,26 @@ class _TweetState extends State<Tweet> {
                                       ),
                                       TextButton(
                                         onPressed: () {
-                                          setState(() {
-                                            _retweeted = !_retweeted;
-                                          });
+                                          ApiControllers.instance
+                                              .retweet(
+                                            _curUser,
+                                            widget.tweetData['slug'],
+                                          )
+                                              .then(
+                                            (result) {
+                                              if (result) {
+                                                setState(
+                                                  () {
+                                                    _retweeted = !_retweeted;
+                                                  },
+                                                );
+                                              } else {
+                                                GlobalControllers.instance
+                                                    .printErrorBar(context,
+                                                        'Unlike unsuccessful, something went wrong');
+                                              }
+                                            },
+                                          );
                                           Navigator.of(context).pop();
                                         },
                                         child: Text(
