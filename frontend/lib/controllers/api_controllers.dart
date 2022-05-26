@@ -241,7 +241,7 @@ class ApiControllers extends GetxController {
     }
   }
 
-  postTweet(body, image) async {
+  postTweet(body, image, retweetSlug) async {
     SharedPreferences pref =
         await PrefControllers.instance.getSharedPreferences();
     String token = await PrefControllers.instance.getToken(pref);
@@ -258,6 +258,9 @@ class ApiControllers extends GetxController {
 
     if (body != null) {
       request.fields['body'] = body;
+    }
+    if (retweetSlug != null) {
+      request.fields['retweetSlug'] = retweetSlug;
     }
 
     if (image != null) {
@@ -438,7 +441,7 @@ class ApiControllers extends GetxController {
       return jsonResponse;
     } else {
       jsonResponse = json.decode(response.body);
-      return jsonResponse;
+      return null;
     }
   }
 }

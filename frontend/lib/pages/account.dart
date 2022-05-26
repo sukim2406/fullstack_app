@@ -164,7 +164,9 @@ class _AccountPageState extends State<AccountPage>
             _likedTweetNextPage = data['next'];
           });
         } else {
-          _likedTweetNextPage = '';
+          setState(() {
+            _likedTweetNextPage = '';
+          });
         }
         setState(() {
           _addLikedTweetLoading = false;
@@ -231,7 +233,9 @@ class _AccountPageState extends State<AccountPage>
             _myTweetNextPage = data['next'];
           });
         } else {
-          _myTweetNextPage = '';
+          setState(() {
+            _myTweetNextPage = '';
+          });
         }
         setState(() {
           _addMyTweetLoading = false;

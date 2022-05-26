@@ -10,11 +10,13 @@ import '../controllers/global_controllers.dart';
 import '../controllers/api_controllers.dart';
 
 import '../widgets/rounded_btn.dart';
+import '../widgets/replyTweet.dart';
 
 import '../pages/home.dart';
 
 class PostTweet extends StatefulWidget {
-  const PostTweet({Key? key}) : super(key: key);
+  String? retweetSlug;
+  PostTweet({Key? key, this.retweetSlug}) : super(key: key);
 
   @override
   State<PostTweet> createState() => _PostTweetState();
@@ -27,9 +29,18 @@ class _PostTweetState extends State<PostTweet> {
   String curUser = '';
   Map profileData = {};
   TextEditingController bodyController = TextEditingController();
+  Map retweetData = {};
 
   @override
   void initState() {
+    if (widget.retweetSlug != null) {
+      ApiControllers.instance.getSingleTweet(widget.retweetSlug).then((result) {
+        setState(() {
+          retweetData = result;
+          print(retweetData);
+        });
+      });
+    }
     ApiControllers.instance.getProfile('').then((value) {
       setState(
         () {
@@ -53,6 +64,11 @@ class _PostTweetState extends State<PostTweet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: (widget.retweetSlug == null)
+          ? null
+          : AppBar(
+              backgroundColor: Colors.lightBlue,
+            ),
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -60,24 +76,96 @@ class _PostTweetState extends State<PostTweet> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                height: GlobalControllers.instance.mediaHeight(context, .1),
-                alignment: Alignment.bottomCenter,
-                child: Text(
-                  'POST TWEET',
-                  style: GoogleFonts.zenLoop(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 50,
-                  ),
-                ),
-              ),
+              (widget.retweetSlug == null)
+                  ? Container(
+                      height:
+                          GlobalControllers.instance.mediaHeight(context, .1),
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        'POST TWEET',
+                        style: GoogleFonts.zenLoop(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 50,
+                        ),
+                      ),
+                    )
+                  : (retweetData.isEmpty)
+                      ? Container()
+                      : ReplyTweet(
+                          tweetData: retweetData,
+                        ),
+              (widget.retweetSlug == null)
+                  ? SizedBox(
+                      height:
+                          GlobalControllers.instance.mediaHeight(context, .05),
+                    )
+                  : Container(),
               SizedBox(
                 width: GlobalControllers.instance.mediaWidth(context, 1),
+                height: GlobalControllers.instance.mediaHeight(context, .07),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: Container(),
+                    CircleAvatar(
+                      backgroundColor: Colors.black,
+                      radius:
+                          GlobalControllers.instance.mediaHeight(context, .035),
+                      child: (profileData['image'] == null)
+                          ? const Icon(
+                              Icons.person,
+                              size: 50,
+                              color: Colors.lightBlue,
+                            )
+                          : null,
+                      backgroundImage: (profileData['image'] == null)
+                          ? null
+                          : NetworkImage(
+                              GlobalControllers.instance.baseUrl +
+                                  profileData['image'],
+                            ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(
+                        left: 10,
+                      ),
+                      height:
+                          GlobalControllers.instance.mediaHeight(context, .07),
+                      width:
+                          GlobalControllers.instance.mediaWidth(context, .60),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          (profileData['nickname'] != null)
+                              ? Text(
+                                  profileData['nickname'],
+                                  style: GoogleFonts.dosis(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 30,
+                                  ),
+                                )
+                              : Text(
+                                  'Nickaname',
+                                  style: GoogleFonts.dosis(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 30,
+                                  ),
+                                ),
+                          (profileData['username'] != null)
+                              ? Text(
+                                  '@' + profileData['username'],
+                                  style: GoogleFonts.dosis(
+                                      color: Colors.grey, fontSize: 20),
+                                )
+                              : Text(
+                                  '@username',
+                                  style: GoogleFonts.dosis(
+                                      color: Colors.grey, fontSize: 20),
+                                )
+                        ],
+                      ),
                     ),
                     RoundedBtnWidget(
                       height: null,
@@ -105,11 +193,12 @@ class _PostTweetState extends State<PostTweet> {
                                       validateTweet()
                                           ? ApiControllers.instance
                                               .postTweet(
-                                                  bodyController.text, _image)
+                                              bodyController.text,
+                                              _image,
+                                              widget.retweetSlug,
+                                            )
                                               .then(
                                               (result) {
-                                                print('result is?');
-                                                print(result);
                                                 if (result) {
                                                   Navigator.of(context)
                                                       .pushAndRemoveUntil(
@@ -145,112 +234,6 @@ class _PostTweetState extends State<PostTweet> {
                       },
                       label: 'Tweet',
                       color: Colors.lightBlue,
-                    ),
-                    SizedBox(
-                      width:
-                          GlobalControllers.instance.mediaWidth(context, .05),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: GlobalControllers.instance.mediaWidth(context, 1),
-                height: GlobalControllers.instance.mediaHeight(context, .07),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.black,
-                      radius:
-                          GlobalControllers.instance.mediaHeight(context, .035),
-                      child: (profileData['image'] == null)
-                          ? const Icon(
-                              Icons.person,
-                              size: 50,
-                              color: Colors.lightBlue,
-                            )
-                          : null,
-                      backgroundImage: (profileData['image'] == null)
-                          ? null
-                          : NetworkImage(
-                              GlobalControllers.instance.baseUrl +
-                                  profileData['image'],
-                            ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(
-                        left: 10,
-                      ),
-                      height:
-                          GlobalControllers.instance.mediaHeight(context, .07),
-                      width:
-                          GlobalControllers.instance.mediaWidth(context, .75),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          (profileData['nickname'] != null)
-                              ? Text(
-                                  profileData['nickname'],
-                                  style: GoogleFonts.dosis(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 30,
-                                  ),
-                                )
-                              : Text(
-                                  'Nickaname',
-                                  style: GoogleFonts.dosis(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 30,
-                                  ),
-                                ),
-                          (profileData['username'] != null)
-                              ? Text(
-                                  '@' + profileData['username'],
-                                  style: GoogleFonts.dosis(
-                                      color: Colors.grey, fontSize: 20),
-                                )
-                              : Text(
-                                  '@username',
-                                  style: GoogleFonts.dosis(
-                                      color: Colors.grey, fontSize: 20),
-                                )
-                        ],
-                      ),
-                      // Row(
-                      //   children: [
-                      //     SizedBox(
-                      //       width: GlobalControllers.instance
-                      //           .mediaWidth(context, .05),
-                      //     ),
-                      //     RichText(
-                      //       text: TextSpan(
-                      //         text: (profileData['nickname'] != null)
-                      //             ? profileData['nickname']
-                      //             : 'Nickname',
-                      //         style: GoogleFonts.dosis(
-                      //           color: Colors.black,
-                      //           fontWeight: FontWeight.bold,
-                      //           fontSize: 30,
-                      //         ),
-                      //         children: [
-                      //           const TextSpan(text: '\t\t'),
-                      //           TextSpan(
-                      //             text: (profileData['username'] != null)
-                      //                 ? '@' + profileData['username']
-                      //                 : '@username',
-                      //             style: GoogleFonts.dosis(
-                      //               color: Colors.grey,
-                      //               fontSize: 25,
-                      //             ),
-                      //           ),
-                      //         ],
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
                     ),
                   ],
                 ),

@@ -5,6 +5,10 @@ import '../controllers/global_controllers.dart';
 import '../controllers/api_controllers.dart';
 import '../controllers/pref_controllers.dart';
 
+import '../pages/post_tweet.dart';
+
+import '../widgets/replyTweet.dart';
+
 class Tweet extends StatefulWidget {
   final Map tweetData;
   const Tweet({
@@ -20,6 +24,7 @@ class _TweetState extends State<Tweet> {
   bool _liked = false;
   bool _retweeted = false;
   String _curUser = '';
+  Map _replyTweet = {};
 
   @override
   void initState() {
@@ -43,6 +48,20 @@ class _TweetState extends State<Tweet> {
         );
       },
     );
+    if (widget.tweetData['retweetSlug'] != null) {
+      ApiControllers.instance
+          .getSingleTweet(widget.tweetData['retweetSlug'])
+          .then(
+        (result) {
+          setState(
+            () {
+              _replyTweet = result;
+              print(_replyTweet.toString());
+            },
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -54,6 +73,31 @@ class _TweetState extends State<Tweet> {
           const Divider(
             color: Colors.lightBlue,
           ),
+          (_replyTweet.isNotEmpty)
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width:
+                          GlobalControllers.instance.mediaWidth(context, .03),
+                    ),
+                    const Text(
+                      'replying to',
+                      style: TextStyle(
+                        color: Colors.lightBlue,
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(),
+                    )
+                  ],
+                )
+              : Container(),
+          (_replyTweet.isNotEmpty)
+              ? ReplyTweetListView(
+                  tweetData: _replyTweet,
+                )
+              : Container(),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -169,7 +213,19 @@ class _TweetState extends State<Tweet> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const Icon(Icons.chat_bubble_outline),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PostTweet(
+                                    retweetSlug: widget.tweetData['slug'],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Icon(Icons.chat_bubble_outline),
+                          ),
                           Expanded(child: Container()),
                           GestureDetector(
                             onTap: () {
