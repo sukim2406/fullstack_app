@@ -471,4 +471,71 @@ class ApiControllers extends GetxController {
       return false;
     }
   }
+
+  getRetweetByUser(userSlug, tweetSlug) async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+    String slug = userSlug + '-' + tweetSlug;
+
+    var response = await http.get(
+      Uri.parse(
+        GlobalControllers.instance.retweetByUserUrl(slug),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  undoRetweet(userSlug, tweetSlug) async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+    String slug = userSlug + '-' + tweetSlug;
+
+    var response = await http.delete(
+      Uri.parse(
+        GlobalControllers.instance.undoRetweetUrl(slug),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  getRetweets() async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+    String curUser = await PrefControllers.instance.getCurUser(pref);
+
+    var response = await http.get(
+      Uri.parse(
+        GlobalControllers.instance.retweetListUrl(curUser),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
+    var jsonResponse = null;
+    if (response.statusCode == 200) {
+      jsonResponse = json.decode(response.body);
+      return jsonResponse;
+    } else {
+      jsonResponse = json.decode(response.body);
+      return jsonResponse;
+    }
+  }
 }

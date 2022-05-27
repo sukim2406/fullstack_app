@@ -95,6 +95,21 @@ class GlobalControllers extends GetxController {
     return retweetUrl;
   }
 
+  retweetByUserUrl(slug) {
+    String retweetByUserUrl = baseUrl + '/api/retweet/${slug}/detail/';
+    return retweetByUserUrl;
+  }
+
+  undoRetweetUrl(slug) {
+    String undoRetweetUrl = baseUrl + '/api/retweet/${slug}/delete/';
+    return undoRetweetUrl;
+  }
+
+  retweetListUrl(username) {
+    String retweetListUrl = baseUrl + '/api/retweet/${username}/list/';
+    return retweetListUrl;
+  }
+
   // get / set size
   mediaHeight(context, multiple) {
     var height = MediaQuery.of(context).size.height * multiple;

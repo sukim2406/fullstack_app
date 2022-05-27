@@ -34,15 +34,32 @@ class _TweetState extends State<Tweet> {
       (value) {
         PrefControllers.instance.getCurUser(value).then(
           (curUser) {
-            setState(() {
-              _curUser = curUser;
-            });
+            if (mounted) {
+              setState(() {
+                _curUser = curUser;
+              });
+            }
             ApiControllers.instance
                 .getLikedByUser(_curUser, widget.tweetData['slug'])
+                .then(
+              (result) {
+                if (mounted) {
+                  setState(
+                    () {
+                      _liked = result;
+                    },
+                  );
+                }
+              },
+            );
+            ApiControllers.instance
+                .getRetweetByUser(_curUser, widget.tweetData['slug'])
                 .then((result) {
-              setState(() {
-                _liked = result;
-              });
+              if (mounted) {
+                setState(() {
+                  _retweeted = result;
+                });
+              }
             });
           },
         );
@@ -53,12 +70,13 @@ class _TweetState extends State<Tweet> {
           .getSingleTweet(widget.tweetData['retweetSlug'])
           .then(
         (result) {
-          setState(
-            () {
-              _replyTweet = result;
-              print(_replyTweet.toString());
-            },
-          );
+          if (mounted) {
+            setState(
+              () {
+                _replyTweet = result;
+              },
+            );
+          }
         },
       );
     }
@@ -238,11 +256,13 @@ class _TweetState extends State<Tweet> {
                                       .then(
                                       (result) {
                                         if (result) {
-                                          setState(
-                                            () {
-                                              _liked = !_liked;
-                                            },
-                                          );
+                                          if (mounted) {
+                                            setState(
+                                              () {
+                                                _liked = !_liked;
+                                              },
+                                            );
+                                          }
                                         } else {
                                           GlobalControllers.instance.printErrorBar(
                                               context,
@@ -258,11 +278,13 @@ class _TweetState extends State<Tweet> {
                                       .then(
                                       (result) {
                                         if (result) {
-                                          setState(
-                                            () {
-                                              _liked = !_liked;
-                                            },
-                                          );
+                                          if (mounted) {
+                                            setState(
+                                              () {
+                                                _liked = !_liked;
+                                              },
+                                            );
+                                          }
                                         } else {
                                           GlobalControllers.instance.printErrorBar(
                                               context,
@@ -304,26 +326,41 @@ class _TweetState extends State<Tweet> {
                                       ),
                                       TextButton(
                                         onPressed: () {
-                                          ApiControllers.instance
-                                              .retweet(
-                                            _curUser,
-                                            widget.tweetData['slug'],
-                                          )
-                                              .then(
-                                            (result) {
-                                              if (result) {
-                                                setState(
-                                                  () {
-                                                    _retweeted = !_retweeted;
+                                          (_retweeted)
+                                              ? ApiControllers.instance
+                                                  .undoRetweet(_curUser,
+                                                      widget.tweetData['slug'])
+                                                  .then((result) {
+                                                  if (mounted) {
+                                                    setState(() {
+                                                      _retweeted = !_retweeted;
+                                                    });
+                                                  }
+                                                })
+                                              : ApiControllers.instance
+                                                  .retweet(
+                                                  _curUser,
+                                                  widget.tweetData['slug'],
+                                                )
+                                                  .then(
+                                                  (result) {
+                                                    if (result) {
+                                                      if (mounted) {
+                                                        setState(
+                                                          () {
+                                                            _retweeted =
+                                                                !_retweeted;
+                                                          },
+                                                        );
+                                                      }
+                                                    } else {
+                                                      GlobalControllers.instance
+                                                          .printErrorBar(
+                                                              context,
+                                                              'Unlike unsuccessful, something went wrong');
+                                                    }
                                                   },
                                                 );
-                                              } else {
-                                                GlobalControllers.instance
-                                                    .printErrorBar(context,
-                                                        'Unlike unsuccessful, something went wrong');
-                                              }
-                                            },
-                                          );
                                           Navigator.of(context).pop();
                                         },
                                         child: Text(

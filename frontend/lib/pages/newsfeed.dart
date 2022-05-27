@@ -21,9 +21,11 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
   late ScrollController _scrollController;
 
   void _initialLoad() async {
-    setState(() {
-      _initLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        _initLoading = true;
+      });
+    }
     try {
       var data = await ApiControllers.instance.getTweetList('');
       for (var tweet in data['results']) {
@@ -31,17 +33,25 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
             await ApiControllers.instance.getProfile(tweet['username']);
         tweet['nickname'] = profileData['nickname'];
         tweet['profileImage'] = profileData['image'];
-        _tweets.add(tweet);
+        if (mounted) {
+          setState(() {
+            _tweets.add(tweet);
+          });
+        }
       }
       // _tweets = tweetData;
       if (data['next'] != null) {
+        if (mounted) {
+          setState(() {
+            _nextPage = data['next'];
+          });
+        }
+      }
+      if (mounted) {
         setState(() {
-          _nextPage = data['next'];
+          _initLoading = false;
         });
       }
-      setState(() {
-        _initLoading = false;
-      });
     } catch (error) {
       GlobalControllers.instance
           .printErrorBar(context, 'Initial Load : ' + error.toString());
@@ -53,9 +63,11 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
         !_initLoading &&
         !_addLoading &&
         _scrollController.position.extentAfter < 300) {
-      setState(() {
-        _addLoading = true;
-      });
+      if (mounted) {
+        setState(() {
+          _addLoading = true;
+        });
+      }
       try {
         var data = await ApiControllers.instance.getTweetList(_nextPage);
         for (var tweet in data['results']) {
@@ -63,18 +75,30 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
               await ApiControllers.instance.getProfile(tweet['username']);
           tweet['nickname'] = profileData['nickname'];
           tweet['profileImage'] = profileData['image'];
-          _tweets.add(tweet);
+          if (mounted) {
+            setState(() {
+              _tweets.add(tweet);
+            });
+          }
         }
         if (data['next'] != null) {
-          setState(() {
-            _nextPage = data['next'];
-          });
+          if (mounted) {
+            setState(() {
+              _nextPage = data['next'];
+            });
+          }
         } else {
-          _nextPage = '';
+          if (mounted) {
+            setState(() {
+              _nextPage = '';
+            });
+          }
         }
-        setState(() {
-          _addLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _addLoading = false;
+          });
+        }
       } catch (error) {
         GlobalControllers.instance
             .printErrorBar(context, 'loadMore = ' + error.toString());

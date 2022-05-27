@@ -211,9 +211,10 @@ class _ReplyTweetListViewState extends State<ReplyTweetListView> {
                 child: CircleAvatar(
                   radius: GlobalControllers.instance.mediaHeight(context, .025),
                   child: (data['profileImage'] == null)
-                      ? const Icon(
+                      ? Icon(
                           Icons.person,
-                          size: 50,
+                          size: GlobalControllers.instance
+                              .mediaHeight(context, .05),
                           color: Colors.lightBlue,
                         )
                       : null,
