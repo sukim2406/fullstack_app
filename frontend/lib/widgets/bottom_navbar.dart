@@ -47,8 +47,8 @@ class BottomNavBarWidget extends StatelessWidget {
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.category),
-            icon: Icon(Icons.category_outlined),
-            label: 'HOME',
+            icon: Icon(Icons.search),
+            label: 'SEARCH',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.person),

@@ -95,7 +95,7 @@ class _AccountPageState extends State<AccountPage>
         _initialRetweetLoad();
       },
     );
-    _tabController = new TabController(length: 4, vsync: this);
+    _tabController = new TabController(length: 3, vsync: this);
     _myTweetScrollController = ScrollController()
       ..addListener(_myTweetLoadMore);
     _likedTweetScrollController = ScrollController()
@@ -606,9 +606,6 @@ class _AccountPageState extends State<AccountPage>
                       Tab(
                         text: 'Retweets',
                       ),
-                      Tab(
-                        text: 'Subs',
-                      ),
                     ],
                   ),
                   Expanded(
@@ -637,11 +634,6 @@ class _AccountPageState extends State<AccountPage>
                             itemCount: _retweets.length,
                             itemBuilder: (_, index) =>
                                 Tweet(tweetData: _retweets[index]),
-                          ),
-                        ),
-                        Center(
-                          child: Text(
-                            'Screen 4',
                           ),
                         ),
                       ],
