@@ -46,8 +46,8 @@ class BottomNavBarWidget extends StatelessWidget {
             label: 'TWEET',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.category),
-            icon: Icon(Icons.search),
+            selectedIcon: Icon(Icons.search),
+            icon: Icon(Icons.search_outlined),
             label: 'SEARCH',
           ),
           NavigationDestination(

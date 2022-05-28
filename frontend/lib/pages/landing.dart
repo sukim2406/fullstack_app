@@ -6,6 +6,7 @@ import '../pages/account.dart';
 import '../pages/tweet_list.dart';
 import '../pages/post_tweet.dart';
 import '../pages/newsfeed.dart';
+import '../pages/search.dart';
 
 import '../widgets/bottom_navbar.dart';
 
@@ -38,10 +39,7 @@ class _LandingPageState extends State<LandingPage> {
     List<Widget> bottomNavBarPages = [
       NewsfeedPage(),
       PostTweet(),
-      Text(
-        'Topic',
-        style: GlobalControllers.instance.bottomNavBarTextStyles,
-      ),
+      SearchPage(),
       AccountPage(updateCurUserLogout: updateCurUserLogout)
     ];
 

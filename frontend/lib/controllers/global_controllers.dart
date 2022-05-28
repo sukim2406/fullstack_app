@@ -110,6 +110,11 @@ class GlobalControllers extends GetxController {
     return retweetListUrl;
   }
 
+  searchTweetUrl(keyword) {
+    String searchTweetUrl = baseUrl + '/api/tweet/list?search=${keyword}';
+    return searchTweetUrl;
+  }
+
   // get / set size
   mediaHeight(context, multiple) {
     var height = MediaQuery.of(context).size.height * multiple;

@@ -4,30 +4,33 @@ import 'package:google_fonts/google_fonts.dart';
 import '../controllers/global_controllers.dart';
 import '../controllers/api_controllers.dart';
 
+import '../widgets/text_input.dart';
+import '../widgets/rounded_btn.dart';
 import '../widgets/tweet.dart';
 
-class NewsfeedPage extends StatefulWidget {
-  const NewsfeedPage({Key? key}) : super(key: key);
+class SearchPage extends StatefulWidget {
+  const SearchPage({Key? key}) : super(key: key);
 
   @override
-  State<NewsfeedPage> createState() => _NewsfeedPageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
-class _NewsfeedPageState extends State<NewsfeedPage> {
+class _SearchPageState extends State<SearchPage> {
+  TextEditingController _searchController = TextEditingController();
   String _nextPage = '';
-  bool _initLoading = true;
+  bool _initLoading = false;
   bool _addLoading = false;
   final List _tweets = [];
   late ScrollController _scrollController;
 
-  void _initialLoad() async {
+  void _initialLoad(keyword) async {
     if (mounted) {
       setState(() {
         _initLoading = true;
       });
     }
     try {
-      var data = await ApiControllers.instance.getTweetList('');
+      var data = await ApiControllers.instance.searchTweets('', keyword);
       for (var tweet in data['results']) {
         var profileData =
             await ApiControllers.instance.getProfile(tweet['username']);
@@ -39,7 +42,6 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
           });
         }
       }
-      // _tweets = tweetData;
       if (data['next'] != null) {
         if (mounted) {
           setState(() {
@@ -54,7 +56,7 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
       }
     } catch (error) {
       GlobalControllers.instance
-          .printErrorBar(context, 'Initial Load : ' + error.toString());
+          .printErrorBar(context, 'Search tweet error ' + error.toString());
     }
   }
 
@@ -83,9 +85,11 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
         }
         if (data['next'] != null) {
           if (mounted) {
-            setState(() {
-              _nextPage = data['next'];
-            });
+            setState(
+              () {
+                _nextPage = data['next'];
+              },
+            );
           }
         } else {
           if (mounted) {
@@ -101,7 +105,7 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
         }
       } catch (error) {
         GlobalControllers.instance
-            .printErrorBar(context, 'loadMore = ' + error.toString());
+            .printErrorBar(context, 'search loadmore error' + error.toString());
       }
     }
   }
@@ -110,15 +114,7 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _initialLoad();
     _scrollController = ScrollController()..addListener(_loadMore);
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    _scrollController.removeListener(_loadMore);
-    super.dispose();
   }
 
   @override
@@ -133,17 +129,45 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
               height: GlobalControllers.instance.mediaHeight(context, .1),
               alignment: Alignment.bottomCenter,
               child: Text(
-                'NEWSFEED',
+                'SEARCH TWEET',
                 style: GoogleFonts.zenLoop(
                   fontWeight: FontWeight.bold,
                   fontSize: 50,
                 ),
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextInputWidget(
+                  height: GlobalControllers.instance.mediaHeight(context, .07),
+                  width: GlobalControllers.instance.mediaWidth(context, .7),
+                  controller: _searchController,
+                  label: 'Search by context or username',
+                  obsecure: false,
+                  enabled: true,
+                ),
+                RoundedBtnWidget(
+                  height: null,
+                  width: null,
+                  func: () {
+                    if (mounted) {
+                      setState(() {
+                        _tweets.clear();
+                      });
+                    }
+                    _initialLoad(_searchController.text);
+                  },
+                  label: 'Search',
+                  color: Colors.lightBlue,
+                )
+              ],
+            ),
             _initLoading
                 ? const CircularProgressIndicator()
-                : SizedBox(
-                    height: GlobalControllers.instance.mediaHeight(context, .8),
+                : Container(
+                    height:
+                        GlobalControllers.instance.mediaHeight(context, .70),
                     child: Column(
                       children: [
                         Expanded(

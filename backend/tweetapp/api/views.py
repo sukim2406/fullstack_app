@@ -5,10 +5,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from accountapp.models import Account
 from tweetapp.models import Tweet
 from tweetapp.api.serializers import TweetSerializer
+
 
 
 @api_view(['GET'])
@@ -88,6 +90,8 @@ class ApiTweetListView(ListAPIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     pagination_class = PageNumberPagination
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('body', 'username')
 
 
 class ApiTweetAuthorListView(ListAPIView):
@@ -99,3 +103,5 @@ class ApiTweetAuthorListView(ListAPIView):
         username = self.kwargs['slug']
         queryset = Tweet.objects.all().filter(username = username)
         return queryset.order_by('-date_updated')
+
+
