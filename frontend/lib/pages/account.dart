@@ -8,15 +8,16 @@ import '../controllers/pref_controllers.dart';
 
 import '../pages/account_update.dart';
 import '../pages/password_update.dart';
+import '../pages/login.dart';
 
 import '../widgets/rounded_btn.dart';
 import '../widgets/tweet.dart';
 
 class AccountPage extends StatefulWidget {
-  final VoidCallback updateCurUserLogout;
-  const AccountPage({
+  VoidCallback? updateCurUserLogout;
+  AccountPage({
     Key? key,
-    required this.updateCurUserLogout,
+    this.updateCurUserLogout,
   }) : super(key: key);
 
   @override
@@ -28,7 +29,6 @@ class _AccountPageState extends State<AccountPage>
   late SharedPreferences pref;
   String token = '';
   String curUser = '';
-  String curUserEmail = '';
   Map profileData = {};
   Map accountData = {};
   late TabController _tabController;
@@ -107,7 +107,12 @@ class _AccountPageState extends State<AccountPage>
   logout() {
     ApiControllers.instance.logout().then((result) {
       if (result == null) {
-        widget.updateCurUserLogout();
+        widget.updateCurUserLogout!();
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (BuildContext context) => const LoginPage()),
+          (Route<dynamic> route) => false,
+        );
       }
     });
   }
@@ -358,7 +363,6 @@ class _AccountPageState extends State<AccountPage>
       if (mounted) {
         setState(() {
           _addMyTweetLoading = true;
-          print('hihi');
         });
       }
       try {

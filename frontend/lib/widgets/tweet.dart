@@ -6,14 +6,18 @@ import '../controllers/api_controllers.dart';
 import '../controllers/pref_controllers.dart';
 
 import '../pages/post_tweet.dart';
+import '../pages/profile.dart';
+import '../pages/account.dart';
 
 import '../widgets/replyTweet.dart';
 
 class Tweet extends StatefulWidget {
+  VoidCallback? updateCurUserLogout;
   final Map tweetData;
-  const Tweet({
+  Tweet({
     Key? key,
     required this.tweetData,
+    this.updateCurUserLogout,
   }) : super(key: key);
 
   @override
@@ -146,11 +150,16 @@ class _TweetState extends State<Tweet> {
                     SizedBox(
                       child: Row(
                         children: [
-                          Text(
-                            widget.tweetData['nickname'],
-                            style: GoogleFonts.nunito(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                          GestureDetector(
+                            onTap: () {
+                              print('go to profile page');
+                            },
+                            child: Text(
+                              widget.tweetData['nickname'],
+                              style: GoogleFonts.nunito(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           Expanded(
@@ -167,10 +176,22 @@ class _TweetState extends State<Tweet> {
                     SizedBox(
                       child: Row(
                         children: [
-                          Text(
-                            '@' + widget.tweetData['username'],
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.nunito(),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfilePage(
+                                    tweetData: widget.tweetData,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              '@' + widget.tweetData['username'],
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.nunito(),
+                            ),
                           ),
                           Expanded(
                             child: Container(),

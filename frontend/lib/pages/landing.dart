@@ -37,7 +37,7 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> bottomNavBarPages = [
-      NewsfeedPage(),
+      NewsfeedPage(updateCurUserLogout: updateCurUserLogout),
       PostTweet(),
       SearchPage(),
       AccountPage(updateCurUserLogout: updateCurUserLogout)

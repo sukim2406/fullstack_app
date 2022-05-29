@@ -240,13 +240,18 @@ class _ReplyTweetListViewState extends State<ReplyTweetListView> {
                 SizedBox(
                   child: Row(
                     children: [
-                      Text(
-                        (data['nickname'] != null)
-                            ? data['nickname']
-                            : 'Nickname',
-                        style: GoogleFonts.nunito(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                      GestureDetector(
+                        onTap: () {
+                          print('go to profile page');
+                        },
+                        child: Text(
+                          (data['nickname'] != null)
+                              ? data['nickname']
+                              : 'Nickname',
+                          style: GoogleFonts.nunito(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -255,12 +260,17 @@ class _ReplyTweetListViewState extends State<ReplyTweetListView> {
                 SizedBox(
                   child: Row(
                     children: [
-                      Text(
-                        (data['username'] != null)
-                            ? '@' + data['username']
-                            : '@Username',
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.nunito(),
+                      GestureDetector(
+                        onTap: () {
+                          print('go to profile page');
+                        },
+                        child: Text(
+                          (data['username'] != null)
+                              ? '@' + data['username']
+                              : '@Username',
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.nunito(),
+                        ),
                       ),
                       Expanded(
                         child: Container(),

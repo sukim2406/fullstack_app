@@ -7,7 +7,11 @@ import '../controllers/api_controllers.dart';
 import '../widgets/tweet.dart';
 
 class NewsfeedPage extends StatefulWidget {
-  const NewsfeedPage({Key? key}) : super(key: key);
+  VoidCallback? updateCurUserLogout;
+  NewsfeedPage({
+    Key? key,
+    this.updateCurUserLogout,
+  }) : super(key: key);
 
   @override
   State<NewsfeedPage> createState() => _NewsfeedPageState();
@@ -19,6 +23,10 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
   bool _addLoading = false;
   final List _tweets = [];
   late ScrollController _scrollController;
+
+  updateCurUserLogout() {
+    widget.updateCurUserLogout!();
+  }
 
   void _initialLoad() async {
     if (mounted) {
@@ -33,6 +41,7 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
             await ApiControllers.instance.getProfile(tweet['username']);
         tweet['nickname'] = profileData['nickname'];
         tweet['profileImage'] = profileData['image'];
+        tweet['message'] = profileData['message'];
         if (mounted) {
           setState(() {
             _tweets.add(tweet);
@@ -75,6 +84,7 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
               await ApiControllers.instance.getProfile(tweet['username']);
           tweet['nickname'] = profileData['nickname'];
           tweet['profileImage'] = profileData['image'];
+          tweet['message'] = profileData['message'];
           if (mounted) {
             setState(() {
               _tweets.add(tweet);
@@ -150,8 +160,10 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
                           child: ListView.builder(
                             controller: _scrollController,
                             itemCount: _tweets.length,
-                            itemBuilder: (_, index) =>
-                                Tweet(tweetData: _tweets[index]),
+                            itemBuilder: (_, index) => Tweet(
+                              tweetData: _tweets[index],
+                              updateCurUserLogout: widget.updateCurUserLogout,
+                            ),
                           ),
                         ),
                         (_addLoading)

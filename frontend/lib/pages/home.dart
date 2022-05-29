@@ -57,6 +57,9 @@ class _HomePageState extends State<HomePage> {
         () {
           token = '';
           curUser = '';
+          PrefControllers.instance.getSharedPreferences().then((result) {
+            result.clear();
+          });
         },
       );
     }
