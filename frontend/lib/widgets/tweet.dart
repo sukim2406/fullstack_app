@@ -178,6 +178,14 @@ class _TweetState extends State<Tweet> {
                         children: [
                           GestureDetector(
                             onTap: () {
+                              // Navigator.of(context).pushAndRemoveUntil(
+                              //   MaterialPageRoute(
+                              //       builder: (BuildContext context) =>
+                              //           ProfilePage(
+                              //             tweetData: widget.tweetData,
+                              //           )),
+                              //   (route) => false,
+                              // );
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

@@ -399,7 +399,7 @@ class ApiControllers extends GetxController {
     }
   }
 
-  getLikedTweets() async {
+  getLikedTweets(String? user) async {
     SharedPreferences pref =
         await PrefControllers.instance.getSharedPreferences();
     String token = await PrefControllers.instance.getToken(pref);
@@ -407,7 +407,9 @@ class ApiControllers extends GetxController {
 
     var response = await http.get(
       Uri.parse(
-        GlobalControllers.instance.likedTweetListUrl(curUser),
+        GlobalControllers.instance.likedTweetListUrl(
+          (user == '') ? curUser : user,
+        ),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
@@ -515,7 +517,7 @@ class ApiControllers extends GetxController {
     }
   }
 
-  getRetweets() async {
+  getRetweets(String? user) async {
     SharedPreferences pref =
         await PrefControllers.instance.getSharedPreferences();
     String token = await PrefControllers.instance.getToken(pref);
@@ -523,7 +525,9 @@ class ApiControllers extends GetxController {
 
     var response = await http.get(
       Uri.parse(
-        GlobalControllers.instance.retweetListUrl(curUser),
+        GlobalControllers.instance.retweetListUrl(
+          (user == '') ? curUser : user,
+        ),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,

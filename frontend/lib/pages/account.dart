@@ -124,7 +124,7 @@ class _AccountPageState extends State<AccountPage>
       });
     }
     try {
-      var data = await ApiControllers.instance.getLikedTweets();
+      var data = await ApiControllers.instance.getLikedTweets('');
       for (var liked in data['results']) {
         var tweet =
             await ApiControllers.instance.getSingleTweet(liked['tweetSlug']);
@@ -168,7 +168,7 @@ class _AccountPageState extends State<AccountPage>
       });
     }
     try {
-      var data = await ApiControllers.instance.getRetweets();
+      var data = await ApiControllers.instance.getRetweets('');
       for (var liked in data['results']) {
         var tweet =
             await ApiControllers.instance.getSingleTweet(liked['tweetSlug']);
@@ -216,7 +216,7 @@ class _AccountPageState extends State<AccountPage>
         });
       }
       try {
-        var data = await ApiControllers.instance.getRetweets();
+        var data = await ApiControllers.instance.getRetweets('');
         for (var liked in data['results']) {
           var tweet =
               await ApiControllers.instance.getSingleTweet(liked['tweetSlug']);
@@ -270,7 +270,8 @@ class _AccountPageState extends State<AccountPage>
         });
       }
       try {
-        var data = await ApiControllers.instance.getLikedTweets();
+        var data =
+            await ApiControllers.instance.getTweetList(_likedTweetNextPage);
         for (var liked in data['results']) {
           var tweet =
               await ApiControllers.instance.getSingleTweet(liked['tweetSlug']);
