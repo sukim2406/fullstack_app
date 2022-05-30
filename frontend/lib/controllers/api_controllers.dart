@@ -437,12 +437,15 @@ class ApiControllers extends GetxController {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
     );
+
+    // var jsonResponse = null;
+    // jsonResponse = json.decode(response.body);
+    // return jsonResponse;
     var jsonResponse = null;
     if (response.statusCode == 200) {
       jsonResponse = json.decode(response.body);
       return jsonResponse;
     } else {
-      jsonResponse = json.decode(response.body);
       return null;
     }
   }
@@ -566,5 +569,49 @@ class ApiControllers extends GetxController {
     // } else {
     //   return null;
     // }
+  }
+
+  deleteTweet(String slug) async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+
+    var response = await http.delete(
+      Uri.parse(
+        GlobalControllers.instance.deleteTweetUrl(slug),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
+
+    var jsonResponse = null;
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  deleteAccount() async {
+    SharedPreferences pref =
+        await PrefControllers.instance.getSharedPreferences();
+    String token = await PrefControllers.instance.getToken(pref);
+
+    var response = await http.delete(
+      Uri.parse(
+        GlobalControllers.instance.deleteAccountUrl(),
+      ),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token ' + token,
+      },
+    );
+
+    var jsonResponse = null;
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

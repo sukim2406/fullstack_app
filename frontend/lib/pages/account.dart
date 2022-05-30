@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -471,6 +472,65 @@ class _AccountPageState extends State<AccountPage>
                         actions: [
                           TextButton(
                             onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: const Text(
+                                    'All data will be erased',
+                                    style: TextStyle(color: Colors.redAccent),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text(
+                                        'CANCEL',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        ApiControllers.instance
+                                            .deleteAccount()
+                                            .then((result) {
+                                          if (result) {
+                                            widget.updateCurUserLogout!();
+                                            Navigator.of(context)
+                                                .pushAndRemoveUntil(
+                                              MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          const LoginPage()),
+                                              (Route<dynamic> route) => false,
+                                            );
+                                          } else {
+                                            GlobalControllers.instance
+                                                .printErrorBar(context,
+                                                    'Account deletion error');
+                                          }
+                                        });
+                                      },
+                                      child: const Text(
+                                        'DELETE',
+                                        style: TextStyle(
+                                          color: Colors.redAccent,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'DELETE ACCOUNT',
+                              style: TextStyle(color: Colors.redAccent),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -515,7 +575,7 @@ class _AccountPageState extends State<AccountPage>
                             child: const Text(
                               'Cancel',
                               style: TextStyle(
-                                color: Colors.redAccent,
+                                color: Colors.grey,
                               ),
                             ),
                           ),
@@ -621,24 +681,27 @@ class _AccountPageState extends State<AccountPage>
                           child: ListView.builder(
                             controller: _myTweetScrollController,
                             itemCount: _myTweets.length,
-                            itemBuilder: (_, index) =>
-                                Tweet(tweetData: _myTweets[index]),
+                            itemBuilder: (_, index) => Tweet(
+                              tweetData: _myTweets[index],
+                            ),
                           ),
                         ),
                         Center(
                           child: ListView.builder(
                             controller: _likedTweetScrollController,
                             itemCount: _likedTweets.length,
-                            itemBuilder: (_, index) =>
-                                Tweet(tweetData: _likedTweets[index]),
+                            itemBuilder: (_, index) => Tweet(
+                              tweetData: _likedTweets[index],
+                            ),
                           ),
                         ),
                         Center(
                           child: ListView.builder(
                             controller: _retweetScrollController,
                             itemCount: _retweets.length,
-                            itemBuilder: (_, index) =>
-                                Tweet(tweetData: _retweets[index]),
+                            itemBuilder: (_, index) => Tweet(
+                              tweetData: _retweets[index],
+                            ),
                           ),
                         ),
                       ],

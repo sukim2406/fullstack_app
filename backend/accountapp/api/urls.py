@@ -1,5 +1,5 @@
 from django.urls import path
-from accountapp.api.views import registeration_view, logout_view, CustomAuthToken, account_details_view, account_update_view
+from accountapp.api.views import registeration_view, logout_view, CustomAuthToken, account_details_view, account_update_view, account_delete_view
 from rest_framework.authtoken.views import obtain_auth_token
 
 app_name = "accountapp"
@@ -11,4 +11,5 @@ urlpatterns = [
     path('logout/', logout_view, name="logout"),
     path('detail/', account_details_view, name="detail"),
     path('update/', account_update_view, name="update"),
+    path('delete/', account_delete_view, name='delete'),
 ]

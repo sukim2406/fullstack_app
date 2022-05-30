@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../controllers/global_controllers.dart';
 import '../controllers/api_controllers.dart';
 
+import '../pages/profile.dart';
+
 class ReplyTweet extends StatefulWidget {
   final Map tweetData;
   const ReplyTweet({
@@ -242,7 +244,14 @@ class _ReplyTweetListViewState extends State<ReplyTweetListView> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          print('go to profile page');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProfilePage(
+                                tweetData: widget.tweetData,
+                              ),
+                            ),
+                          );
                         },
                         child: Text(
                           (data['nickname'] != null)
@@ -262,7 +271,14 @@ class _ReplyTweetListViewState extends State<ReplyTweetListView> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          print('go to profile page');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProfilePage(
+                                tweetData: widget.tweetData,
+                              ),
+                            ),
+                          );
                         },
                         child: Text(
                           (data['username'] != null)

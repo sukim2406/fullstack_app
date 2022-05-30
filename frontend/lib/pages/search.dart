@@ -60,6 +60,44 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
+  void _reload() async {
+    if (mounted) {
+      setState(() {
+        _initLoading = true;
+      });
+    }
+    try {
+      var data = await ApiControllers.instance
+          .searchTweets('', _searchController.text);
+      for (var tweet in data['results']) {
+        var profileData =
+            await ApiControllers.instance.getProfile(tweet['username']);
+        tweet['nickname'] = profileData['nickname'];
+        tweet['profileImage'] = profileData['image'];
+        if (mounted) {
+          setState(() {
+            _tweets.add(tweet);
+          });
+        }
+      }
+      if (data['next'] != null) {
+        if (mounted) {
+          setState(() {
+            _nextPage = data['next'];
+          });
+        }
+      }
+      if (mounted) {
+        setState(() {
+          _initLoading = false;
+        });
+      }
+    } catch (error) {
+      GlobalControllers.instance
+          .printErrorBar(context, 'Search tweet error ' + error.toString());
+    }
+  }
+
   void _loadMore() async {
     if (_nextPage.isNotEmpty &&
         !_initLoading &&
@@ -174,8 +212,9 @@ class _SearchPageState extends State<SearchPage> {
                           child: ListView.builder(
                             controller: _scrollController,
                             itemCount: _tweets.length,
-                            itemBuilder: (_, index) =>
-                                Tweet(tweetData: _tweets[index]),
+                            itemBuilder: (_, index) => Tweet(
+                              tweetData: _tweets[index],
+                            ),
                           ),
                         ),
                         (_addLoading)

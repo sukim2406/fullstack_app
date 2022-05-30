@@ -75,3 +75,22 @@ def account_update_view(request):
             data['response'] = "Account update success"
             return Response(data=data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE',])
+@permission_classes((IsAuthenticated,))
+def account_delete_view(request):
+    try:
+        account = request.user
+    except Account.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'DELETE':
+        operation = account.delete()
+        data = {}
+        if operation:
+            data["success"] = "delete successful"
+        else:
+            data["failure"] = "delete failed"
+        
+        return Response(data=data)

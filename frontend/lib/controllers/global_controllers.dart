@@ -115,6 +115,16 @@ class GlobalControllers extends GetxController {
     return searchTweetUrl;
   }
 
+  deleteTweetUrl(slug) {
+    String deleteTweetUrl = baseUrl + '/api/tweet/${slug}/delete/';
+    return deleteTweetUrl;
+  }
+
+  deleteAccountUrl() {
+    String deleteAccountUrl = baseUrl + '/api/account/delete/';
+    return deleteAccountUrl;
+  }
+
   // get / set size
   mediaHeight(context, multiple) {
     var height = MediaQuery.of(context).size.height * multiple;

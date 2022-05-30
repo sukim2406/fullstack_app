@@ -28,6 +28,14 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
     widget.updateCurUserLogout!();
   }
 
+  void _reload() {
+    if (mounted) {
+      setState(() {
+        _tweets.clear();
+      });
+    }
+  }
+
   void _initialLoad() async {
     if (mounted) {
       setState(() {

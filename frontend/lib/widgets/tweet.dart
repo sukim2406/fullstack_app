@@ -8,6 +8,7 @@ import '../controllers/pref_controllers.dart';
 import '../pages/post_tweet.dart';
 import '../pages/profile.dart';
 import '../pages/account.dart';
+import '../pages/home.dart';
 
 import '../widgets/replyTweet.dart';
 
@@ -74,12 +75,14 @@ class _TweetState extends State<Tweet> {
           .getSingleTweet(widget.tweetData['retweetSlug'])
           .then(
         (result) {
-          if (mounted) {
-            setState(
-              () {
-                _replyTweet = result;
-              },
-            );
+          if (result != null) {
+            if (mounted) {
+              setState(
+                () {
+                  _replyTweet = result;
+                },
+              );
+            }
           }
         },
       );
@@ -152,7 +155,14 @@ class _TweetState extends State<Tweet> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              print('go to profile page');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfilePage(
+                                    tweetData: widget.tweetData,
+                                  ),
+                                ),
+                              );
                             },
                             child: Text(
                               widget.tweetData['nickname'],
@@ -165,7 +175,68 @@ class _TweetState extends State<Tweet> {
                           Expanded(
                             child: Container(),
                           ),
-                          const Icon(Icons.more_vert),
+                          (_curUser == widget.tweetData['username'])
+                              ? GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title:
+                                              const Text('Delete this tweet?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text(
+                                                'Cancel',
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                ApiControllers.instance
+                                                    .deleteTweet(widget
+                                                        .tweetData['slug'])
+                                                    .then((result) {
+                                                  if (result) {
+                                                    Navigator.of(context)
+                                                        .pushAndRemoveUntil(
+                                                      MaterialPageRoute(
+                                                          builder: (BuildContext
+                                                                  context) =>
+                                                              const HomePage()),
+                                                      (Route<dynamic> route) =>
+                                                          false,
+                                                    );
+                                                  } else {
+                                                    GlobalControllers.instance
+                                                        .printErrorBar(context,
+                                                            'Delete tweet unsuccessful');
+                                                  }
+                                                });
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text(
+                                                'DELETE',
+                                                style: TextStyle(
+                                                  color: Colors.redAccent,
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: const Icon(
+                                    Icons.delete_forever_outlined,
+                                  ),
+                                )
+                              : Container(),
                           SizedBox(
                             width: GlobalControllers.instance
                                 .mediaWidth(context, .02),
@@ -178,14 +249,6 @@ class _TweetState extends State<Tweet> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              // Navigator.of(context).pushAndRemoveUntil(
-                              //   MaterialPageRoute(
-                              //       builder: (BuildContext context) =>
-                              //           ProfilePage(
-                              //             tweetData: widget.tweetData,
-                              //           )),
-                              //   (route) => false,
-                              // );
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
