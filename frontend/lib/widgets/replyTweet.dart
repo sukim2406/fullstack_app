@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/global_controllers.dart';
 import '../controllers/api_controllers.dart';
+import '../controllers/url_controllers.dart';
 
 import '../pages/profile.dart';
 
@@ -22,7 +23,6 @@ class _ReplyTweetState extends State<ReplyTweet> {
   @override
   void initState() {
     data = widget.tweetData;
-    // TODO: implement initState
     ApiControllers.instance.getProfile(widget.tweetData['username']).then(
       (result) {
         setState(() {
@@ -33,12 +33,6 @@ class _ReplyTweetState extends State<ReplyTweet> {
     );
     super.initState();
   }
-
-  // @override
-  // void dispose() {
-  //   // TODO: implement dispose
-  //   super.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +62,10 @@ class _ReplyTweetState extends State<ReplyTweet> {
                 backgroundImage: (data['profileImage'] == null)
                     ? null
                     : NetworkImage(
-                        GlobalControllers.instance.baseUrl +
-                            data['profileImage'],
+                        UrlControllers.instance.baseUrl + data['profileImage'],
                       ),
               ),
-              Expanded(
+              const Expanded(
                 child: VerticalDivider(
                   thickness: 3,
                 ),
@@ -84,13 +77,13 @@ class _ReplyTweetState extends State<ReplyTweet> {
               left: 10,
             ),
             width: GlobalControllers.instance.mediaWidth(context, .77),
-            // height: GlobalControllers.instance.mediaHeight(context, .2),
+            // height: UrlControllers.instance.mediaHeight(context, .2),
             child: Column(
               children: [
                 SizedBox(
                   height: GlobalControllers.instance.mediaHeight(context, .01),
                 ),
-                Container(
+                SizedBox(
                   height: GlobalControllers.instance.mediaHeight(context, .07),
                   width: GlobalControllers.instance.mediaWidth(context, .77),
                   child: Column(
@@ -132,7 +125,7 @@ class _ReplyTweetState extends State<ReplyTweet> {
                   ),
                 ),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     child: Row(children: [
                       Expanded(
                         child: Container(
@@ -151,8 +144,7 @@ class _ReplyTweetState extends State<ReplyTweet> {
                               width: GlobalControllers.instance
                                   .mediaWidth(context, .28),
                               child: Image.network(
-                                GlobalControllers.instance.baseUrl +
-                                    data['image'],
+                                UrlControllers.instance.baseUrl + data['image'],
                                 fit: BoxFit.cover,
                               ),
                             )
@@ -184,7 +176,6 @@ class _ReplyTweetListViewState extends State<ReplyTweetListView> {
   @override
   void initState() {
     data = widget.tweetData;
-    // TODO: implement initState
     ApiControllers.instance.getProfile(widget.tweetData['username']).then(
       (result) {
         setState(() {
@@ -223,7 +214,7 @@ class _ReplyTweetListViewState extends State<ReplyTweetListView> {
                   backgroundImage: (data['profileImage'] == null)
                       ? null
                       : NetworkImage(
-                          GlobalControllers.instance.baseUrl +
+                          UrlControllers.instance.baseUrl +
                               data['profileImage'],
                         ),
                 ),

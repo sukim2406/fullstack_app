@@ -5,7 +5,6 @@ import '../controllers/global_controllers.dart';
 import '../controllers/api_controllers.dart';
 
 import '../pages/home.dart';
-import '../pages/login.dart';
 
 import '../widgets/text_input.dart';
 import '../widgets/rounded_btn.dart';
@@ -30,7 +29,6 @@ class _PasswordUpdatePageState extends State<PasswordUpdatePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     emailController.text = widget.accountData['email'];
     userController.text = widget.accountData['username'];

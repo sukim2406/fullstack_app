@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../controllers/global_controllers.dart';
-
 import '../pages/account.dart';
-import '../pages/tweet_list.dart';
 import '../pages/post_tweet.dart';
 import '../pages/newsfeed.dart';
 import '../pages/search.dart';
@@ -39,7 +36,7 @@ class _LandingPageState extends State<LandingPage> {
     List<Widget> bottomNavBarPages = [
       NewsfeedPage(updateCurUserLogout: updateCurUserLogout),
       PostTweet(),
-      SearchPage(),
+      const SearchPage(),
       AccountPage(updateCurUserLogout: updateCurUserLogout)
     ];
 

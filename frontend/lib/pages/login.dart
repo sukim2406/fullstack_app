@@ -27,16 +27,14 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: SingleChildScrollView(
         child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
+          height: GlobalControllers.instance.mediaHeight(context, 1),
+          width: GlobalControllers.instance.mediaWidth(context, 1),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // padding - top
               Expanded(
                 child: Container(),
               ),
-              // logo
               const LogoWidget(),
               SizedBox(
                 height: GlobalControllers.instance.mediaHeight(
@@ -51,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              // Textfields
               TextInputWidget(
                 enabled: true,
                 height: GlobalControllers.instance.mediaHeight(context, .07),
@@ -75,9 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: null,
                 width: GlobalControllers.instance.mediaWidth(context, .5),
                 func: () {
-                  if (emailController.text == null ||
-                      emailController.text.isEmpty ||
-                      passwordController.text == null ||
+                  if (emailController.text.isEmpty ||
                       passwordController.text.isEmpty) {
                     GlobalControllers.instance
                         .printErrorBar(context, 'Empty input field detected.');
@@ -86,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                         .login(emailController.text, passwordController.text)
                         .then(
                       (result) {
-                        if (result == null) {
+                        if (result == 'success') {
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
                                 builder: (BuildContext context) =>
@@ -94,8 +89,8 @@ class _LoginPageState extends State<LoginPage> {
                             (Route<dynamic> route) => false,
                           );
                         } else {
-                          GlobalControllers.instance
-                              .printErrorBar(context, result);
+                          GlobalControllers.instance.printErrorBar(
+                              context, result['non_field_errors']);
                         }
                       },
                     );

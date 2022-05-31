@@ -5,6 +5,7 @@ import 'package:frontend/controllers/api_controllers.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../controllers/global_controllers.dart';
+import '../controllers/url_controllers.dart';
 
 import '../widgets/text_input.dart';
 import '../widgets/rounded_btn.dart';
@@ -74,7 +75,7 @@ class _AccountUpdatePageState extends State<AccountUpdatePage> {
                     child: _image != null
                         ? Image.file(File(_image!.path))
                         : widget.profileData['image'] != null
-                            ? Image.network(GlobalControllers.instance.baseUrl +
+                            ? Image.network(UrlControllers.instance.baseUrl +
                                 widget.profileData['image'])
                             : Icon(
                                 Icons.person,
@@ -101,7 +102,10 @@ class _AccountUpdatePageState extends State<AccountUpdatePage> {
                             _image = image!;
                           });
                         } on PlatformException catch (e) {
-                          print('Failed to pick image: $e');
+                          GlobalControllers.instance.printErrorBar(
+                            context,
+                            'Failed to pick image: $e',
+                          );
                         }
                       },
                       label: 'From Gallery',
@@ -118,7 +122,10 @@ class _AccountUpdatePageState extends State<AccountUpdatePage> {
                             _image = image!;
                           });
                         } on PlatformException catch (e) {
-                          print('Failed to pick image: $e');
+                          GlobalControllers.instance.printErrorBar(
+                            context,
+                            'Failed to pick image: $e',
+                          );
                         }
                       },
                       label: 'Take a Photo',
@@ -222,7 +229,7 @@ class _AccountUpdatePageState extends State<AccountUpdatePage> {
                     child: _image != null
                         ? Image.file(File(_image!.path))
                         : widget.profileData['image'] != null
-                            ? Image.network(GlobalControllers.instance.baseUrl +
+                            ? Image.network(UrlControllers.instance.baseUrl +
                                 widget.profileData['image'])
                             : Icon(
                                 Icons.person,
@@ -277,7 +284,6 @@ class _AccountUpdatePageState extends State<AccountUpdatePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     nicknameController.text = widget.profileData['nickname'];
     messageController.text = (widget.profileData['message'] != null)
@@ -289,7 +295,7 @@ class _AccountUpdatePageState extends State<AccountUpdatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Update Profile'),
+        title: const Text('Update Profile'),
       ),
       body: Stepper(
         currentStep: _index,

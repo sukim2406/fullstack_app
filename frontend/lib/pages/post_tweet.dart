@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/global_controllers.dart';
 import '../controllers/api_controllers.dart';
+import '../controllers/url_controllers.dart';
 
 import '../widgets/rounded_btn.dart';
 import '../widgets/replyTweet.dart';
@@ -32,12 +33,18 @@ class _PostTweetState extends State<PostTweet> {
   Map retweetData = {};
 
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void initState() {
     if (widget.retweetSlug != null) {
       ApiControllers.instance.getSingleTweet(widget.retweetSlug).then((result) {
         setState(() {
           retweetData = result;
-          print(retweetData);
         });
       });
     }
@@ -70,8 +77,8 @@ class _PostTweetState extends State<PostTweet> {
               backgroundColor: Colors.lightBlue,
             ),
       body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
+        height: GlobalControllers.instance.mediaHeight(context, 1),
+        width: GlobalControllers.instance.mediaWidth(context, 1),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -121,7 +128,7 @@ class _PostTweetState extends State<PostTweet> {
                       backgroundImage: (profileData['image'] == null)
                           ? null
                           : NetworkImage(
-                              GlobalControllers.instance.baseUrl +
+                              UrlControllers.instance.baseUrl +
                                   profileData['image'],
                             ),
                     ),
@@ -305,7 +312,8 @@ class _PostTweetState extends State<PostTweet> {
                               _image = image!;
                             });
                           } on PlatformException catch (e) {
-                            print('Failed to pick image: $e');
+                            GlobalControllers.instance.printErrorBar(
+                                context, 'Failed to pick image: $e');
                           }
                         },
                         label: 'Take picture',
@@ -324,7 +332,8 @@ class _PostTweetState extends State<PostTweet> {
                               _image = image!;
                             });
                           } on PlatformException catch (e) {
-                            print('Failed to pick image: $e');
+                            GlobalControllers.instance.printErrorBar(
+                                context, 'Failed to pick image: $e');
                           }
                         },
                         label: 'From gallery',

@@ -3,11 +3,9 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:async/async.dart';
-import 'package:http_parser/http_parser.dart';
 
-import '../controllers/global_controllers.dart';
 import '../controllers/pref_controllers.dart';
+import '../controllers/url_controllers.dart';
 
 class ApiControllers extends GetxController {
   static ApiControllers instance = Get.find();
@@ -20,15 +18,12 @@ class ApiControllers extends GetxController {
       'password': password,
     };
 
-    var jsonResponse = null;
     var response = await http.post(
-      Uri.parse(
-        GlobalControllers.instance.getLoginUrl(),
-      ),
+      Uri.parse(UrlControllers.instance.getLoginUrl()),
       body: data,
     );
     if (response.statusCode == 200) {
-      jsonResponse = json.decode(response.body);
+      var jsonResponse = json.decode(response.body);
       if (jsonResponse != null) {
         pref.setString(
           'token',
@@ -38,12 +33,13 @@ class ApiControllers extends GetxController {
           'curUser',
           jsonResponse['user'],
         );
-        return null;
+        return 'success';
       } else {
-        return 'jsonRespone null';
+        return 'jsonResponse null';
       }
     } else {
-      return response.body.toString();
+      var jsonResponse = json.decode(response.body);
+      return jsonResponse;
     }
   }
 
@@ -57,15 +53,14 @@ class ApiControllers extends GetxController {
       'password2': password2
     };
 
-    var jsonResponse = null;
     var response = await http.post(
       Uri.parse(
-        GlobalControllers.instance.getRegisterUrl(),
+        UrlControllers.instance.getRegisterUrl(),
       ),
       body: data,
     );
     if (response.statusCode == 200) {
-      jsonResponse = json.decode(response.body);
+      var jsonResponse = json.decode(response.body);
       if (jsonResponse != null) {
         if (jsonResponse['response'] == 'successfully registered a new user') {
           pref.setString(
@@ -76,7 +71,7 @@ class ApiControllers extends GetxController {
             'curUser',
             jsonResponse['username'],
           );
-          return null;
+          return 'success';
         } else {
           return jsonResponse.toString();
         }
@@ -84,7 +79,8 @@ class ApiControllers extends GetxController {
         return 'jsonResponse null';
       }
     } else {
-      return response.body.toString();
+      var jsonResponse = json.decode(response.body);
+      return jsonResponse;
     }
   }
 
@@ -96,15 +92,14 @@ class ApiControllers extends GetxController {
 
     var response = await http.get(
       Uri.parse(
-        GlobalControllers.instance.getAccountUrl(),
+        UrlControllers.instance.getAccountUrl(),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
     );
-    var jsonResponse = null;
     if (response.statusCode == 200) {
-      jsonResponse = json.decode(response.body);
+      var jsonResponse = json.decode(response.body);
       return jsonResponse;
     } else {
       return null;
@@ -119,26 +114,17 @@ class ApiControllers extends GetxController {
 
     var response = await http.put(
       Uri.parse(
-        GlobalControllers.instance.getAccountUpdateUrl(),
+        UrlControllers.instance.getAccountUpdateUrl(),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
       body: data,
     );
-    var jsonResponse = null;
     if (response.statusCode == 200) {
-      jsonResponse = json.decode(response.body);
+      var jsonResponse = json.decode(response.body);
       if (jsonResponse != null) {
         if (jsonResponse['response'] == 'Account update success') {
-          // pref.setString(
-          //   'token',
-          //   jsonResponse['token'],
-          // );
-          // pref.setString(
-          //   'curUser',
-          //   jsonResponse['username'],
-          // );
           pref.remove('token');
           pref.remove('curUser');
           return null;
@@ -161,7 +147,7 @@ class ApiControllers extends GetxController {
 
     var response = await http.post(
       Uri.parse(
-        GlobalControllers.instance.getLogoutUrl(),
+        UrlControllers.instance.getLogoutUrl(),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
@@ -183,16 +169,15 @@ class ApiControllers extends GetxController {
     var response = await http.get(
       Uri.parse(
         (targetUser.isNotEmpty)
-            ? GlobalControllers.instance.getProfileUrl(targetUser)
-            : GlobalControllers.instance.getProfileUrl(curUser),
+            ? UrlControllers.instance.getProfileUrl(targetUser)
+            : UrlControllers.instance.getProfileUrl(curUser),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
     );
-    var jsonResponse = null;
     if (response.statusCode == 200) {
-      jsonResponse = json.decode(response.body);
+      var jsonResponse = json.decode(response.body);
       return jsonResponse;
     } else {
       return null;
@@ -205,10 +190,10 @@ class ApiControllers extends GetxController {
     String token = await PrefControllers.instance.getToken(pref);
     String curUser = await PrefControllers.instance.getCurUser(pref);
 
-    var request = await http.MultipartRequest(
+    var request = http.MultipartRequest(
       'PUT',
       Uri.parse(
-        GlobalControllers.instance.updateProfileUrl(curUser),
+        UrlControllers.instance.updateProfileUrl(curUser),
       ),
     );
 
@@ -245,12 +230,11 @@ class ApiControllers extends GetxController {
     SharedPreferences pref =
         await PrefControllers.instance.getSharedPreferences();
     String token = await PrefControllers.instance.getToken(pref);
-    String curUser = await PrefControllers.instance.getCurUser(pref);
 
-    var request = await http.MultipartRequest(
+    var request = http.MultipartRequest(
       'POST',
       Uri.parse(
-        GlobalControllers.instance.postTweetUrl(),
+        UrlControllers.instance.postTweetUrl(),
       ),
     );
 
@@ -286,21 +270,19 @@ class ApiControllers extends GetxController {
     SharedPreferences pref =
         await PrefControllers.instance.getSharedPreferences();
     String token = await PrefControllers.instance.getToken(pref);
-    String curUser = await PrefControllers.instance.getCurUser(pref);
 
     var response = await http.get(
       nextPage.isNotEmpty
           ? Uri.parse(nextPage)
           : Uri.parse(
-              GlobalControllers.instance.tweetListUrl(),
+              UrlControllers.instance.tweetListUrl(),
             ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
     );
-    var jsonResponse = null;
     if (response.statusCode == 200) {
-      jsonResponse = json.decode(response.body);
+      var jsonResponse = json.decode(response.body);
       return jsonResponse;
     } else {
       return null;
@@ -314,15 +296,14 @@ class ApiControllers extends GetxController {
 
     var response = await http.get(
       Uri.parse(
-        GlobalControllers.instance.userTweetUrl(author),
+        UrlControllers.instance.userTweetUrl(author),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
     );
-    var jsonResponse = null;
     if (response.statusCode == 200) {
-      jsonResponse = json.decode(response.body);
+      var jsonResponse = json.decode(response.body);
       return jsonResponse;
     } else {
       return null;
@@ -341,7 +322,7 @@ class ApiControllers extends GetxController {
 
     var response = await http.post(
       Uri.parse(
-        GlobalControllers.instance.likeTweetUrl(),
+        UrlControllers.instance.likeTweetUrl(),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
@@ -364,7 +345,7 @@ class ApiControllers extends GetxController {
 
     var response = await http.get(
       Uri.parse(
-        GlobalControllers.instance.likedByUserUrl(slug),
+        UrlControllers.instance.likedByUserUrl(slug),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
@@ -385,7 +366,7 @@ class ApiControllers extends GetxController {
 
     var response = await http.delete(
       Uri.parse(
-        GlobalControllers.instance.unlikeTweetUrl(slug),
+        UrlControllers.instance.unlikeTweetUrl(slug),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
@@ -407,7 +388,7 @@ class ApiControllers extends GetxController {
 
     var response = await http.get(
       Uri.parse(
-        GlobalControllers.instance.likedTweetListUrl(
+        UrlControllers.instance.likedTweetListUrl(
           (user == '') ? curUser : user,
         ),
       ),
@@ -415,12 +396,11 @@ class ApiControllers extends GetxController {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
     );
-    var jsonResponse = null;
     if (response.statusCode == 200) {
-      jsonResponse = json.decode(response.body);
+      var jsonResponse = json.decode(response.body);
       return jsonResponse;
     } else {
-      jsonResponse = json.decode(response.body);
+      var jsonResponse = json.decode(response.body);
       return jsonResponse;
     }
   }
@@ -431,19 +411,15 @@ class ApiControllers extends GetxController {
     String token = await PrefControllers.instance.getToken(pref);
     var response = await http.get(
       Uri.parse(
-        GlobalControllers.instance.singleTweetUrl(slug),
+        UrlControllers.instance.singleTweetUrl(slug),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
     );
 
-    // var jsonResponse = null;
-    // jsonResponse = json.decode(response.body);
-    // return jsonResponse;
-    var jsonResponse = null;
     if (response.statusCode == 200) {
-      jsonResponse = json.decode(response.body);
+      var jsonResponse = json.decode(response.body);
       return jsonResponse;
     } else {
       return null;
@@ -462,7 +438,7 @@ class ApiControllers extends GetxController {
 
     var response = await http.post(
       Uri.parse(
-        GlobalControllers.instance.retweetUrl(),
+        UrlControllers.instance.retweetUrl(),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
@@ -485,7 +461,7 @@ class ApiControllers extends GetxController {
 
     var response = await http.get(
       Uri.parse(
-        GlobalControllers.instance.retweetByUserUrl(slug),
+        UrlControllers.instance.retweetByUserUrl(slug),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
@@ -506,7 +482,7 @@ class ApiControllers extends GetxController {
 
     var response = await http.delete(
       Uri.parse(
-        GlobalControllers.instance.undoRetweetUrl(slug),
+        UrlControllers.instance.undoRetweetUrl(slug),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
@@ -528,7 +504,7 @@ class ApiControllers extends GetxController {
 
     var response = await http.get(
       Uri.parse(
-        GlobalControllers.instance.retweetListUrl(
+        UrlControllers.instance.retweetListUrl(
           (user == '') ? curUser : user,
         ),
       ),
@@ -536,12 +512,11 @@ class ApiControllers extends GetxController {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
     );
-    var jsonResponse = null;
     if (response.statusCode == 200) {
-      jsonResponse = json.decode(response.body);
+      var jsonResponse = json.decode(response.body);
       return jsonResponse;
     } else {
-      jsonResponse = json.decode(response.body);
+      var jsonResponse = json.decode(response.body);
       return jsonResponse;
     }
   }
@@ -555,20 +530,13 @@ class ApiControllers extends GetxController {
       nextPage.isNotEmpty
           ? Uri.parse(nextPage)
           : Uri.parse(
-              GlobalControllers.instance.searchTweetUrl(keyword),
+              UrlControllers.instance.searchTweetUrl(keyword),
             ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
     );
     return json.decode(response.body);
-    // var jsonResponse = null;
-    // if (response.statusCode == 200) {
-    //   jsonResponse = json.decode(response.body);
-    //   return jsonResponse;
-    // } else {
-    //   return null;
-    // }
   }
 
   deleteTweet(String slug) async {
@@ -578,14 +546,13 @@ class ApiControllers extends GetxController {
 
     var response = await http.delete(
       Uri.parse(
-        GlobalControllers.instance.deleteTweetUrl(slug),
+        UrlControllers.instance.deleteTweetUrl(slug),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
     );
 
-    var jsonResponse = null;
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -600,14 +567,13 @@ class ApiControllers extends GetxController {
 
     var response = await http.delete(
       Uri.parse(
-        GlobalControllers.instance.deleteAccountUrl(),
+        UrlControllers.instance.deleteAccountUrl(),
       ),
       headers: {
         HttpHeaders.authorizationHeader: 'Token ' + token,
       },
     );
 
-    var jsonResponse = null;
     if (response.statusCode == 200) {
       return true;
     } else {

@@ -4,6 +4,7 @@ import './pages/home.dart';
 import './controllers/pref_controllers.dart';
 import './controllers/global_controllers.dart';
 import './controllers/api_controllers.dart';
+import './controllers/url_controllers.dart';
 
 void main() {
   Get.put(
@@ -14,6 +15,9 @@ void main() {
   );
   Get.put(
     ApiControllers(),
+  );
+  Get.put(
+    UrlControllers(),
   );
   runApp(const MyApp());
 }

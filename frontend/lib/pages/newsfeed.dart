@@ -24,24 +24,21 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
   final List _tweets = [];
   late ScrollController _scrollController;
 
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   updateCurUserLogout() {
     widget.updateCurUserLogout!();
   }
 
-  void _reload() {
-    if (mounted) {
-      setState(() {
-        _tweets.clear();
-      });
-    }
-  }
-
   void _initialLoad() async {
-    if (mounted) {
-      setState(() {
-        _initLoading = true;
-      });
-    }
+    setState(() {
+      _initLoading = true;
+    });
     try {
       var data = await ApiControllers.instance.getTweetList('');
       for (var tweet in data['results']) {
@@ -50,25 +47,18 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
         tweet['nickname'] = profileData['nickname'];
         tweet['profileImage'] = profileData['image'];
         tweet['message'] = profileData['message'];
-        if (mounted) {
-          setState(() {
-            _tweets.add(tweet);
-          });
-        }
-      }
-      // _tweets = tweetData;
-      if (data['next'] != null) {
-        if (mounted) {
-          setState(() {
-            _nextPage = data['next'];
-          });
-        }
-      }
-      if (mounted) {
         setState(() {
-          _initLoading = false;
+          _tweets.add(tweet);
         });
       }
+      if (data['next'] != null) {
+        setState(() {
+          _nextPage = data['next'];
+        });
+      }
+      setState(() {
+        _initLoading = false;
+      });
     } catch (error) {
       GlobalControllers.instance
           .printErrorBar(context, 'Initial Load : ' + error.toString());
@@ -80,11 +70,9 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
         !_initLoading &&
         !_addLoading &&
         _scrollController.position.extentAfter < 300) {
-      if (mounted) {
-        setState(() {
-          _addLoading = true;
-        });
-      }
+      setState(() {
+        _addLoading = true;
+      });
       try {
         var data = await ApiControllers.instance.getTweetList(_nextPage);
         for (var tweet in data['results']) {
@@ -93,30 +81,22 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
           tweet['nickname'] = profileData['nickname'];
           tweet['profileImage'] = profileData['image'];
           tweet['message'] = profileData['message'];
-          if (mounted) {
-            setState(() {
-              _tweets.add(tweet);
-            });
-          }
-        }
-        if (data['next'] != null) {
-          if (mounted) {
-            setState(() {
-              _nextPage = data['next'];
-            });
-          }
-        } else {
-          if (mounted) {
-            setState(() {
-              _nextPage = '';
-            });
-          }
-        }
-        if (mounted) {
           setState(() {
-            _addLoading = false;
+            _tweets.add(tweet);
           });
         }
+        if (data['next'] != null) {
+          setState(() {
+            _nextPage = data['next'];
+          });
+        } else {
+          setState(() {
+            _nextPage = '';
+          });
+        }
+        setState(() {
+          _addLoading = false;
+        });
       } catch (error) {
         GlobalControllers.instance
             .printErrorBar(context, 'loadMore = ' + error.toString());
@@ -165,14 +145,24 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
                     child: Column(
                       children: [
                         Expanded(
-                          child: ListView.builder(
-                            controller: _scrollController,
-                            itemCount: _tweets.length,
-                            itemBuilder: (_, index) => Tweet(
-                              tweetData: _tweets[index],
-                              updateCurUserLogout: widget.updateCurUserLogout,
-                            ),
-                          ),
+                          child: (_tweets.isEmpty)
+                              ? const Center(
+                                  child: Text(
+                                    'No Tweets Yet',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                )
+                              : ListView.builder(
+                                  controller: _scrollController,
+                                  itemCount: _tweets.length,
+                                  itemBuilder: (_, index) => Tweet(
+                                    tweetData: _tweets[index],
+                                    updateCurUserLogout:
+                                        widget.updateCurUserLogout,
+                                  ),
+                                ),
                         ),
                         (_addLoading)
                             ? const Padding(

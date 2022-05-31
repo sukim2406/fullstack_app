@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../controllers/global_controllers.dart';
 import '../controllers/api_controllers.dart';
 import '../controllers/pref_controllers.dart';
+import '../controllers/url_controllers.dart';
 
 import '../pages/post_tweet.dart';
 import '../pages/profile.dart';
@@ -141,7 +142,7 @@ class _TweetState extends State<Tweet> {
                   backgroundImage: (widget.tweetData['profileImage'] == null)
                       ? null
                       : NetworkImage(
-                          GlobalControllers.instance.baseUrl +
+                          UrlControllers.instance.baseUrl +
                               widget.tweetData['profileImage'],
                         ),
                 ),

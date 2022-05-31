@@ -37,11 +37,7 @@ def api_update_profile_view(request, slug):
         return Response({'response': "You don't have permission to edit this tweet."})
 
     if request.method == 'PUT':
-        print('comes here')
-        print(request.data)
         serializer = ProfileSerializer(profile, data=request.data)
-        print('serializer check')
-        print(serializer)
         data = {}
         if serializer.is_valid():
             serializer.save()

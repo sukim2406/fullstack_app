@@ -28,8 +28,8 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
+        height: GlobalControllers.instance.mediaHeight(context, 1),
+        width: GlobalControllers.instance.mediaWidth(context, 1),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -106,7 +106,7 @@ class _SignupPageState extends State<SignupPage> {
                   )
                       .then(
                     (result) {
-                      if (result == null) {
+                      if (result == 'success') {
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
                               builder: (BuildContext context) =>

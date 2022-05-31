@@ -3,6 +3,7 @@ import 'package:frontend/controllers/api_controllers.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/global_controllers.dart';
+import '../controllers/url_controllers.dart';
 
 import '../widgets/tweet.dart';
 
@@ -56,7 +57,7 @@ class _ProfilePageState extends State<ProfilePage>
         var profileData =
             await ApiControllers.instance.getProfile(tweet['username']);
         if (tweet['image'] != null) {
-          tweet['image'] = GlobalControllers.instance.baseUrl + tweet['image'];
+          tweet['image'] = UrlControllers.instance.baseUrl + tweet['image'];
         }
         tweet['nickname'] = profileData['nickname'];
         tweet['profileImage'] = profileData['image'];
@@ -104,8 +105,7 @@ class _ProfilePageState extends State<ProfilePage>
           var profileData =
               await ApiControllers.instance.getProfile(tweet['username']);
           if (tweet['image'] != null) {
-            tweet['image'] =
-                GlobalControllers.instance.baseUrl + tweet['image'];
+            tweet['image'] = UrlControllers.instance.baseUrl + tweet['image'];
           }
           tweet['nickname'] = profileData['nickname'];
           tweet['profileImage'] = profileData['image'];
@@ -155,7 +155,7 @@ class _ProfilePageState extends State<ProfilePage>
         var profileData =
             await ApiControllers.instance.getProfile(tweet['username']);
         if (tweet['image'] != null) {
-          tweet['image'] = GlobalControllers.instance.baseUrl + tweet['image'];
+          tweet['image'] = UrlControllers.instance.baseUrl + tweet['image'];
         }
         tweet['nickname'] = profileData['nickname'];
         tweet['profileImage'] = profileData['image'];
@@ -207,8 +207,7 @@ class _ProfilePageState extends State<ProfilePage>
           var profileData =
               await ApiControllers.instance.getProfile(tweet['username']);
           if (tweet['image'] != null) {
-            tweet['image'] =
-                GlobalControllers.instance.baseUrl + tweet['image'];
+            tweet['image'] = UrlControllers.instance.baseUrl + tweet['image'];
           }
           tweet['nickname'] = profileData['nickname'];
           tweet['profileImage'] = profileData['image'];
@@ -389,7 +388,7 @@ class _ProfilePageState extends State<ProfilePage>
                           (widget.tweetData['profileImage'] == null)
                               ? null
                               : NetworkImage(
-                                  GlobalControllers.instance.baseUrl +
+                                  UrlControllers.instance.baseUrl +
                                       widget.tweetData['profileImage'],
                                 ),
                     ),

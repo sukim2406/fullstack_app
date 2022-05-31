@@ -16,19 +16,24 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   String _nextPage = '';
   bool _initLoading = false;
   bool _addLoading = false;
   final List _tweets = [];
   late ScrollController _scrollController;
 
-  void _initialLoad(keyword) async {
+  @override
+  void setState(fn) {
     if (mounted) {
-      setState(() {
-        _initLoading = true;
-      });
+      super.setState(fn);
     }
+  }
+
+  void _initialLoad(keyword) async {
+    setState(() {
+      _initLoading = true;
+    });
     try {
       var data = await ApiControllers.instance.searchTweets('', keyword);
       for (var tweet in data['results']) {
@@ -36,62 +41,18 @@ class _SearchPageState extends State<SearchPage> {
             await ApiControllers.instance.getProfile(tweet['username']);
         tweet['nickname'] = profileData['nickname'];
         tweet['profileImage'] = profileData['image'];
-        if (mounted) {
-          setState(() {
-            _tweets.add(tweet);
-          });
-        }
-      }
-      if (data['next'] != null) {
-        if (mounted) {
-          setState(() {
-            _nextPage = data['next'];
-          });
-        }
-      }
-      if (mounted) {
         setState(() {
-          _initLoading = false;
+          _tweets.add(tweet);
         });
       }
-    } catch (error) {
-      GlobalControllers.instance
-          .printErrorBar(context, 'Search tweet error ' + error.toString());
-    }
-  }
-
-  void _reload() async {
-    if (mounted) {
+      if (data['next'] != null) {
+        setState(() {
+          _nextPage = data['next'];
+        });
+      }
       setState(() {
-        _initLoading = true;
+        _initLoading = false;
       });
-    }
-    try {
-      var data = await ApiControllers.instance
-          .searchTweets('', _searchController.text);
-      for (var tweet in data['results']) {
-        var profileData =
-            await ApiControllers.instance.getProfile(tweet['username']);
-        tweet['nickname'] = profileData['nickname'];
-        tweet['profileImage'] = profileData['image'];
-        if (mounted) {
-          setState(() {
-            _tweets.add(tweet);
-          });
-        }
-      }
-      if (data['next'] != null) {
-        if (mounted) {
-          setState(() {
-            _nextPage = data['next'];
-          });
-        }
-      }
-      if (mounted) {
-        setState(() {
-          _initLoading = false;
-        });
-      }
     } catch (error) {
       GlobalControllers.instance
           .printErrorBar(context, 'Search tweet error ' + error.toString());
@@ -103,11 +64,9 @@ class _SearchPageState extends State<SearchPage> {
         !_initLoading &&
         !_addLoading &&
         _scrollController.position.extentAfter < 300) {
-      if (mounted) {
-        setState(() {
-          _addLoading = true;
-        });
-      }
+      setState(() {
+        _addLoading = true;
+      });
       try {
         var data = await ApiControllers.instance.getTweetList(_nextPage);
         for (var tweet in data['results']) {
@@ -115,32 +74,24 @@ class _SearchPageState extends State<SearchPage> {
               await ApiControllers.instance.getProfile(tweet['username']);
           tweet['nickname'] = profileData['nickname'];
           tweet['profileImage'] = profileData['image'];
-          if (mounted) {
-            setState(() {
-              _tweets.add(tweet);
-            });
-          }
-        }
-        if (data['next'] != null) {
-          if (mounted) {
-            setState(
-              () {
-                _nextPage = data['next'];
-              },
-            );
-          }
-        } else {
-          if (mounted) {
-            setState(() {
-              _nextPage = '';
-            });
-          }
-        }
-        if (mounted) {
           setState(() {
-            _addLoading = false;
+            _tweets.add(tweet);
           });
         }
+        if (data['next'] != null) {
+          setState(
+            () {
+              _nextPage = data['next'];
+            },
+          );
+        } else {
+          setState(() {
+            _nextPage = '';
+          });
+        }
+        setState(() {
+          _addLoading = false;
+        });
       } catch (error) {
         GlobalControllers.instance
             .printErrorBar(context, 'search loadmore error' + error.toString());
@@ -203,7 +154,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
             _initLoading
                 ? const CircularProgressIndicator()
-                : Container(
+                : SizedBox(
                     height:
                         GlobalControllers.instance.mediaHeight(context, .70),
                     child: Column(

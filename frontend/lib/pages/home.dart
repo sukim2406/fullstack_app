@@ -1,16 +1,9 @@
-import 'dart:io';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 
 import '../pages/login.dart';
 import '../pages/landing.dart';
 
-import './post_tweet.dart';
-import './tweet_list.dart';
-import './profile.dart';
 import '../controllers/pref_controllers.dart';
 
 class HomePage extends StatefulWidget {
