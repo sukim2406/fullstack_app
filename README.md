@@ -18,11 +18,14 @@ to create fullstack application using Flutter as frontend and Django Rest Framew
 <p float="left">**
   <img src="readme_screenshots/login.png" width = 300>
   <img src="readme_screenshots/newsfeed.png" width = 300>
-  <img src="readme_screenshots/post.png" width = 300>
 </p>
 
 <p float="left">**
   <img src="readme_screenshots/profile.png" width = 300>
   <img src="readme_screenshots/register.png" width = 300>
+</p>
+
+<p float="left">**
+  <img src="readme_screenshots/post.png" width = 300>
   <img src="readme_screenshots/search.png" width = 300>
 </p>
