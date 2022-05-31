@@ -90,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         } else {
                           GlobalControllers.instance.printErrorBar(
-                              context, result['non_field_errors']);
+                              context, result['non_field_errors'].toString());
                         }
                       },
                     );
